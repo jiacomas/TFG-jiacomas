@@ -1,0 +1,14 @@
+# Data processing
+pandas
+numpy
+
+# NLP libraries
+spacy
+stanza
+nltk
+
+# Machine learning & deep learning
+torch
+transformers
+pytorch-lightning
+scikit-learn
