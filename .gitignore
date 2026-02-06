@@ -1,4 +1,8 @@
 **/.DS_Store
+**/__pycache__
+
+# virtual environment
+/tfg/
 
 # data
-data/
+/data/
