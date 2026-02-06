@@ -13,13 +13,14 @@ El repositori està estructurat de la següent manera:
 ```bash
 /
 ├── data/                   # Dades del projecte
-│   ├── pdfs/               # Dades originals (en format PDF)
+│   ├── raw/               # Dades originals (en format PDF)
 │   ├── processed/          # Dades preprocessades
 │   └── splits/             # Train / validation / test
 │
 ├── src/                    # Codi font principal
 │   ├── data/               # Càrrega i preprocessament de dades
 │   │   ├── load_data.py
+│   │   ├── merge_sources.py
 │   │   └── preprocess.py
 │   │
 │   ├── models/             # Implementació dels models
@@ -27,41 +28,34 @@ El repositori està estructurat de la següent manera:
 │   │   ├── model_b.py
 │   │   └── model_c.py
 │   │
-│   ├── training/           # Entrenament dels models
-│   │   ├── train.py
-│   │   └── hyperparams.py
-│   │
 │   ├── evaluation/         # Avaluació i comparació
 │   │   ├── metrics.py
 │   │   └── compare.py
 │   │
 │   └── utils/              # Funcions auxiliars
-│       └── helpers.py
+│       ├── config.py
+│       └── seed.py
 │
 ├── experiments/            # Resultats d’experiments
 │   ├── exp_01/
-│   │   ├── config.yaml
-│   │   └── results.json
 │   └── exp_02/
 │
 ├── results/                # Resultats finals
-│   ├── tables/             # Taules comparatives
-│   ├── figures/            # Gràfiques
+│   ├── plots/              # Gràfiques i taules
+│   ├── metrics.csv
 │   └── summary.md
-│
-├── tests/                  # Tests del codi
 │
 ├── requirements.txt        # Dependències
 ├── README.md               # Descripció del projecte
-└── LICENSE
+└── main.py                 # Script principal
+
 ```
 
 ## Instal·lació i execució
 ```bash
 git clone https://github.com/jiacomas/TFG.git
-cd TFG
 pip install -r requirements.txt
-# python main.py
+python main.py
 ```
 
 
