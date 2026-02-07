@@ -1,19 +1,23 @@
 # Anàlisi i Comparació de Mètodes d'Aprendrege Automàtic i Aprenentatge Profund per a la Clasificació Multilabel d'Anuncis Oficials amb Objectius de Desenvolupament Sostenible (ODS)
+
 TFG 66910
 
 ## Informació del TFG
-**Autor/a**: Jia Chun Comas Frigola     
-**Tutor/a**: Dr. Antonio Lozano Bagen     
+
+**Autor/a**: Jia Chun Comas Frigola  
+**Tutor/a**: Dr. Antonio Lozano Bagen  
 **Grau**: Grau en Enginyeria de Dades  
 **Universitat**: Universitat Autònoma de Barcelona  
 **Curs acadèmic**: 2025–2026
 
 ## Estructura del repositori
+
 El repositori està estructurat de la següent manera:
+
 ```bash
 /
 ├── data/                   # Dades del projecte
-│   ├── raw/               # Dades originals (en format PDF)
+│   ├── raw/                # Dades originals (en format PDF)
 │   ├── processed/          # Dades preprocessades
 │   └── splits/             # Train / validation / test
 │
@@ -21,7 +25,12 @@ El repositori està estructurat de la següent manera:
 │   ├── data/               # Càrrega i preprocessament de dades
 │   │   ├── load_data.py
 │   │   ├── merge_sources.py
-│   │   └── preprocess.py
+│   │   ├── clean_data.py
+│   │   ├── save_data.py
+│   │   ├── schema.py
+│   │   └── analysis/       # Anàlisi de dades
+│   │       ├── analysis.py
+│   │       └── utils.py
 │   │
 │   ├── models/             # Implementació dels models
 │   │   ├── model_a.py
@@ -34,6 +43,7 @@ El repositori està estructurat de la següent manera:
 │   │
 │   └── utils/              # Funcions auxiliars
 │       ├── config.py
+│       ├── routes.py
 │       └── seed.py
 │
 ├── experiments/            # Resultats d’experiments
@@ -52,10 +62,9 @@ El repositori està estructurat de la següent manera:
 ```
 
 ## Instal·lació i execució
+
 ```bash
 git clone https://github.com/jiacomas/TFG.git
 pip install -r requirements.txt
 python main.py
 ```
-
-

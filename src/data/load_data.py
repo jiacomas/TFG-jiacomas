@@ -21,7 +21,7 @@ def validate_columns(df, expected_cols):
             f"Missing columns: {missing}"
         )
 
-def load_csv(filepath: Path) -> pd.DataFrame:
+def load_csv(filepath: Path, expected_cols: list[str]) -> pd.DataFrame:
     """
     Load a CSV file into a list of dictionaries.
     """
@@ -30,15 +30,12 @@ def load_csv(filepath: Path) -> pd.DataFrame:
 
     df = pd.read_csv(filepath)
 
-    excepted_col = [
-        Description.ID_REGISTRE,
-        Description.TEXT_RAW
-    ]
-    validate_columns(df, excepted_col)
+    validate_columns(df, expected_cols)
 
-    return df[excepted_col]
+    return df[expected_cols]
 
-def load_excel(filepath: Path) -> pd.DataFrame:
+
+def load_excel(filepath: Path, expected_cols: list[str]) -> pd.DataFrame:
     """
     Load all sheets from an Excel file and merge them into a single DataFrame.
     """
@@ -48,7 +45,35 @@ def load_excel(filepath: Path) -> pd.DataFrame:
     sheets = pd.read_excel(filepath, sheet_name=None)
 
     dfs = []
-    expected_cols = [
+    for sheet_name, df in sheets.items():
+        validate_columns(df, expected_cols)
+        dfs.append(df[expected_cols])
+
+    return pd.concat(dfs, ignore_index=True)
+
+
+def load_files(csv_loads: list[Path], meta_file: Path, csv_cols: list[str], meta_cols: list[str]) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    Load all files and merge them into a single DataFrame.
+    """
+    load = []
+    for csv_path in csv_loads:
+        load.append(load_csv(csv_path, csv_cols))
+    
+    load = pd.concat(load, ignore_index=True)
+    
+    meta = load_excel(meta_file, meta_cols)
+    
+    return load, meta
+
+def load_clean_data(csv_loads: list[Path] = None, meta_file: Path = None, csv_cols: list[str] = None, meta_cols: list[str] = None) -> pd.DataFrame:
+    csv_loads = csv_loads or [CSV_2022, CSV_2023, CSV_2024]
+    meta_file = meta_file or META_FILE
+    csv_cols = csv_cols or [
+        Description.ID_REGISTRE,
+        Description.TEXT_RAW
+    ]
+    meta_cols = meta_cols or [
         Metadata.ID,
         Metadata.DATE,
         Metadata.ID_REGISTRE,
@@ -59,32 +84,7 @@ def load_excel(filepath: Path) -> pd.DataFrame:
         Metadata.PDF_URL,
     ]
 
-    for sheet_name, df in sheets.items():
-        validate_columns(df, expected_cols)
-        dfs.append(df[expected_cols])
-
-    return pd.concat(dfs, ignore_index=True)
-
-
-def load_files(csv_loads: list[Path], meta_file: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """
-    Load all files and merge them into a single DataFrame.
-    """
-    load = []
-    for csv_path in csv_loads:
-        load.append(load_csv(csv_path))
-    
-    load = pd.concat(load, ignore_index=True)
-    
-    meta = load_excel(meta_file)
-    
-    return load, meta
-
-def load_clean_data(csv_loads: list[Path] = None, meta_file: Path = None) -> pd.DataFrame:
-    csv_loads = csv_loads or [CSV_2022, CSV_2023, CSV_2024]
-    meta_file = meta_file or META_FILE
-
-    desc_df, meta_df = load_files(csv_loads, meta_file)
+    desc_df, meta_df = load_files(csv_loads, meta_file, csv_cols, meta_cols)
     
     descriptions, metadata = clean(desc_df, meta_df)
 
