@@ -1,6 +1,7 @@
 # Data processing
 pandas
 numpy
+openpyxl
 
 # NLP libraries
 spacy

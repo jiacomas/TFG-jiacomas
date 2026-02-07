@@ -13,7 +13,7 @@ El repositori està estructurat de la següent manera:
 ```bash
 /
 ├── data/                   # Dades del projecte
-│   ├── raw/                # Dades originals (en format PDF)
+│   ├── raw/               # Dades originals (en format PDF)
 │   ├── processed/          # Dades preprocessades
 │   └── splits/             # Train / validation / test
 │
@@ -21,7 +21,7 @@ El repositori està estructurat de la següent manera:
 │   ├── data/               # Càrrega i preprocessament de dades
 │   │   ├── load_data.py
 │   │   ├── merge_sources.py
-│   │   └── preprocess_text.py
+│   │   └── preprocess.py
 │   │
 │   ├── models/             # Implementació dels models
 │   │   ├── model_a.py
@@ -36,19 +36,24 @@ El repositori està estructurat de la següent manera:
 │       ├── config.py
 │       └── seed.py
 │
-├── results/                # Resultats dels models
-│   ├── metrics.csv
-│   └── plots/              # Gràfics dels resultats
+├── experiments/            # Resultats d’experiments
+│   ├── exp_01/
+│   └── exp_02/
 │
-├── main.py                 # Script principal
+├── results/                # Resultats finals
+│   ├── plots/              # Gràfiques i taules
+│   ├── metrics.csv
+│   └── summary.md
+│
 ├── requirements.txt        # Dependències
-└── README.md               # Descripció del projecte
+├── README.md               # Descripció del projecte
+└── main.py                 # Script principal
+
 ```
 
 ## Instal·lació i execució
 ```bash
 git clone https://github.com/jiacomas/TFG.git
-cd TFG
 pip install -r requirements.txt
 python main.py
 ```
