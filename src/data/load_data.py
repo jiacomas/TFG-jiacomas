@@ -5,15 +5,21 @@ from pathlib import Path
 
 from src.utils.routes import CSV_2022, CSV_2023, CSV_2024, META_FILE, DATA_CLEAN
 from src.data.schema import Description, Metadata
-from src.data.clean_data import clean_text_from_data
+from src.data.clean_data import clean
 from src.data.merge_sources import merge_data
 
 # Increase CSV field size limit to handle large text fields
 csv.field_size_limit(sys.maxsize)
 
-"""
-Load data from CSV and Excel files. Clean them.
-"""
+def validate_columns(df, expected_cols):
+    """
+    Validate that the DataFrame has all the expected columns.
+    """
+    if not expected_cols.issubset(df.columns):
+        missing = expected_cols - set(df.columns)
+        raise ValueError(
+            f"Missing columns: {missing}"
+        )
 
 def load_csv(filepath: Path) -> pd.DataFrame:
     """
@@ -28,33 +34,7 @@ def load_csv(filepath: Path) -> pd.DataFrame:
         Description.ID_REGISTRE,
         Description.TEXT_RAW
     ]
-    if not set(excepted_col).issubset(df.columns):
-        raise ValueError(f"Missing columns in {filepath}")
-
-    return df[excepted_col]
-
-def load_excel(filepath: Path) -> pd.DataFrame:
-    """
-    Load an Excel file into a list of dictionaries.
-    It has different pages, so we need to load them all.
-    """
-    if not filepath.exists():
-        raise FileNotFoundError(f"File not found: {filepath}")
-
-    df = pd.read_excel(filepath, sheet_name=None)
-
-    excepted_col = [
-        Metadata.ID,
-        Metadata.DATE,
-        Metadata.ID_REGISTRE,
-        Metadata.ORGANIZATION,
-        Metadata.TITLE,
-        Metadata.TYPE,
-        Metadata.ODS,
-        Metadata.PDF_URL
-    ]
-    if not set(excepted_col).issubset(df.columns):
-        raise ValueError(f"Missing columns in {filepath}")
+    validate_columns(df, excepted_col)
 
     return df[excepted_col]
 
@@ -68,7 +48,7 @@ def load_excel(filepath: Path) -> pd.DataFrame:
     sheets = pd.read_excel(filepath, sheet_name=None)
 
     dfs = []
-    expected_cols = {
+    expected_cols = [
         Metadata.ID,
         Metadata.DATE,
         Metadata.ID_REGISTRE,
@@ -77,55 +57,37 @@ def load_excel(filepath: Path) -> pd.DataFrame:
         Metadata.TYPE,
         Metadata.ODS,
         Metadata.PDF_URL,
-    }
+    ]
 
     for sheet_name, df in sheets.items():
-        if not expected_cols.issubset(df.columns):
-            missing = expected_cols - set(df.columns)
-            raise ValueError(
-                f"Missing columns in sheet '{sheet_name}': {missing}"
-            )
-
-        dfs.append(df[list(expected_cols)])
+        validate_columns(df, expected_cols)
+        dfs.append(df[expected_cols])
 
     return pd.concat(dfs, ignore_index=True)
 
-def save_data(data: pd.DataFrame, filepath: Path):
+
+def load_files(csv_loads: list[Path], meta_file: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Save data to a CSV file.
+    Load all files and merge them into a single DataFrame.
     """
-    if not filepath.parent.exists():
-        filepath.parent.mkdir(parents=True, exist_ok=True)
-
-    data.to_csv(filepath, index=False)
-
-def load_clean_data():
-    # Load data
-    csv_loads = [CSV_2022, CSV_2023, CSV_2024]
-    csv_22 = load_csv(CSV_2022)
-    csv_23 = load_csv(CSV_2023)
-    csv_24 = load_csv(CSV_2024)
-
-    csv_22_24 = pd.concat([csv_22, csv_23, csv_24], ignore_index=True)
-
-    meta = load_excel(META_FILE)
+    load = []
+    for csv_path in csv_loads:
+        load.append(load_csv(csv_path))
     
-    # Clean data
-    csv_22_24 = clean_text_from_data(
-        csv_22_24,
-        Description.TEXT_RAW,
-        Description.TEXT_CLEAN
-    )
+    load = pd.concat(load, ignore_index=True)
+    
+    meta = load_excel(meta_file)
+    
+    return load, meta
 
-    meta = clean_text_from_data(
-        meta,
-        Metadata.TITLE,
-        Metadata.TITLE_CLEAN
-    )
+def load_clean_data(csv_loads: list[Path] = None, meta_file: Path = None) -> pd.DataFrame:
+    csv_loads = csv_loads or [CSV_2022, CSV_2023, CSV_2024]
+    meta_file = meta_file or META_FILE
 
-    # Merge data
-    merged = merge_data(csv_22_24, meta)
+    desc_df, meta_df = load_files(csv_loads, meta_file)
+    
+    descriptions, metadata = clean(desc_df, meta_df)
 
-    save_data(merged, DATA_CLEAN)
+    merged = merge_data(descriptions, metadata)
 
     return merged
