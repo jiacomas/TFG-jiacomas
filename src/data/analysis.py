@@ -1,6 +1,6 @@
-from src.data.load_data import get_clean_data
 import pandas as pd
 from src.data.schema import Metadata
+from src.utils.routes import ODS_VISUALIZATION, ODS_PERCENTAGE_VISUALIZATION
 
 def clean_nan(data: pd.DataFrame) -> pd.DataFrame:
     data = data.dropna()
@@ -19,7 +19,9 @@ def count_ods(data: pd.DataFrame) -> dict[str, int]:
 
     return ods_count
 
-def main():
+if __name__ == "__main__":
+    from src.data.load_data import get_clean_data
+
     data = get_clean_data()
 
     print("Anuncis carregats:", len(data))
@@ -27,10 +29,11 @@ def main():
     data = clean_nan(data)
     print("Anuncis sense NaN:", len(data))
 
-    print("\nODS:", count_ods(data))
+    count = count_ods(data)
+
+    print("\nODS:", count)
+    from src.data.visualize import visualize_ods, save_visualization, visualize_ods_percentage
+    save_visualization(visualize_ods(count), ODS_VISUALIZATION)
+    save_visualization(visualize_ods_percentage(count), ODS_PERCENTAGE_VISUALIZATION)
 
     print("\nFINAL")
-
-
-if __name__ == "__main__":
-    main()

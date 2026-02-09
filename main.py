@@ -1,28 +1,30 @@
 import pandas as pd
 from pathlib import Path
-from src.utils.routes import DATA_CLEAN
+from src.utils.routes import DATA_CLEAN, ODS_VISUALIZATION, ODS_PERCENTAGE_VISUALIZATION
 
-def load_raw_data():
+def load_raw_data(save = True, filepath: Path = DATA_CLEAN):
     from src.data.load_data import create_clean_data
+    from src.data.save_data import save_data
 
     merged = create_clean_data()
+    if save:
+        save_data(merged, filepath)
     return merged
 
-def save_data(data: pd.DataFrame = None, filepath: Path = DATA_CLEAN):
-    if data is None:
-        data = load_raw_data()
-
-    from src.data.save_data import save_data
-    save_data(data, filepath)
+def load_clean_data(filepath: Path = DATA_CLEAN):
+    from src.data.load_data import get_clean_data
+    return get_clean_data(filepath)
 
 def visualize_ods(data: pd.DataFrame = None):
-    from src.data.load_data import get_clean_data
     from src.data.analysis import count_ods
-    from src.data.visualize import visualize_ods
+    from src.data.visualize import visualize_ods, save_visualization, visualize_ods_percentage
 
-    data = data or get_clean_data()
+    data = data or load_clean_data()
     ods_count = count_ods(data)
-    visualize_ods(ods_count)
+    ods = visualize_ods(ods_count)
+    percentage = visualize_ods_percentage(ods_count)
+    save_visualization(ods, ODS_VISUALIZATION)
+    save_visualization(percentage, ODS_PERCENTAGE_VISUALIZATION)
 
 if __name__ == "__main__":
     visualize_ods()

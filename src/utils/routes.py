@@ -2,7 +2,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]  # src/config.py -> src -> tfg
 
+# Data
 DATA_DIR = ROOT / "data"
+
 RAW_DIR = DATA_DIR / "raw"
 PROCESSED_DIR = DATA_DIR / "processed"
 SPLITS_DIR = DATA_DIR / "splits"
@@ -13,3 +15,12 @@ CSV_2024 = RAW_DIR / "anuncis_BOPB_2024_contingut.csv"
 META_FILE = RAW_DIR / "Anuncis_2022_2024.xlsx"
 
 DATA_CLEAN = PROCESSED_DIR / "data_clean.csv"
+
+# Results
+RESULTS_DIR = ROOT / "results"
+
+## EDA
+EDA_DIR = RESULTS_DIR / "eda"
+
+ODS_VISUALIZATION = EDA_DIR / "ods_visualization.png"
+ODS_PERCENTAGE_VISUALIZATION = EDA_DIR / "ods_percentage_visualization.png"
