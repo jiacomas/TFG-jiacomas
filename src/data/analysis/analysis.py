@@ -19,7 +19,7 @@ def count_ods(data: pd.DataFrame) -> dict[str, int]:
 
     return ods_count
 
-if __name__ == "__main__":
+def main():
     from src.data.load_data import get_clean_data
 
     data = get_clean_data()
@@ -32,8 +32,11 @@ if __name__ == "__main__":
     count = count_ods(data)
 
     print("\nODS:", count)
-    from src.data.visualize import visualize_ods, save_visualization, visualize_ods_percentage
-    save_visualization(visualize_ods(count), ODS_VISUALIZATION)
-    save_visualization(visualize_ods_percentage(count), ODS_PERCENTAGE_VISUALIZATION)
+
+    if input("visualize? Y/N: ").upper() == "Y":
+        from src.data.analysis.visualize import visualize_ods, save_visualization, visualize_ods_percentage
+        save_visualization(visualize_ods(count), ODS_VISUALIZATION)
+        save_visualization(visualize_ods_percentage(count), ODS_PERCENTAGE_VISUALIZATION)
+
 
     print("\nFINAL")

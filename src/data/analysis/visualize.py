@@ -63,7 +63,7 @@ def visualize_ods(ods_count: dict[str, int]):
         )
 
     # Legend with total
-    ax.legend([f"Total d'anuncis: {total}"])
+    ax.legend([f"Total d'ODS: {total}"])
 
     fig.tight_layout()
     return fig
