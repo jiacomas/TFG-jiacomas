@@ -4,10 +4,10 @@ TFG 66910
 
 ## Informació del TFG
 
-**Autor/a**: Jia Chun Comas Frigola  
-**Tutor/a**: Dr. Antonio Lozano Bagen  
-**Grau**: Grau en Enginyeria de Dades  
-**Universitat**: Universitat Autònoma de Barcelona  
+**Autor/a**: Jia Chun Comas Frigola
+**Tutor/a**: Dr. Antonio Lozano Bagen
+**Grau**: Grau en Enginyeria de Dades
+**Universitat**: Universitat Autònoma de Barcelona
 **Curs acadèmic**: 2025–2026
 
 ## Estructura del repositori

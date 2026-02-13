@@ -1,7 +1,9 @@
 import csv
 from pathlib import Path
+
 import pandas as pd
-from src.data.schema import Metadata, Description
+
+from src.data.schema import Description, Metadata
 
 
 def clean_nan(data: pd.DataFrame) -> pd.DataFrame:

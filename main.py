@@ -1,38 +1,40 @@
-import pandas as pd
 from pathlib import Path
-from src.data.load_data import create_clean_data, get_clean_data
-from src.data.save_data import save_data
+
+import pandas as pd
+
 from src.data.analysis.analysis import (
-    count_ods,
     clean_nan,
-    get_correlation,
+    count_ods,
     get_average,
+    get_correlation,
+    get_length_description,
     get_max,
     get_min,
-    get_length_description,
     get_organization,
     save_dict,
 )
-from src.utils.routes import (
-    DATA_CLEAN,
-    ODS_VISUALIZATION,
-    ODS_PERCENTAGE_VISUALIZATION,
-    LENGTH_DESCRIPTION_HISTOGRAM_VISUALIZATION,
-    LENGTH_DESCRIPTION_BOXPLOT_VISUALIZATION,
-    ORGANIZATION_VISUALIZATION,
-    ORGANIZATION_CSV,
-    ODS_DISTRIBUTION_REGISTER_VISUALIZATION,
-    ODS_CORRELATION_VISUALIZATION,
-)
 from src.data.analysis.visualize import (
+    bar_chart_distribution_ods_register,
     bar_chart_ods,
     bar_chart_ods_percentage,
-    bar_chart_distribution_ods_register,
-    heatmap_correlation_ods,
     bar_chart_organization,
     box_plot_length_description,
+    heatmap_correlation_ods,
     histogram_length_description,
     save_visualization,
+)
+from src.data.load_data import create_clean_data, get_clean_data
+from src.data.save_data import save_data
+from src.utils.routes import (
+    DATA_CLEAN,
+    LENGTH_DESCRIPTION_BOXPLOT_VISUALIZATION,
+    LENGTH_DESCRIPTION_HISTOGRAM_VISUALIZATION,
+    ODS_CORRELATION_VISUALIZATION,
+    ODS_DISTRIBUTION_REGISTER_VISUALIZATION,
+    ODS_PERCENTAGE_VISUALIZATION,
+    ODS_VISUALIZATION,
+    ORGANIZATION_CSV,
+    ORGANIZATION_VISUALIZATION,
 )
 
 Y_value = "Y"

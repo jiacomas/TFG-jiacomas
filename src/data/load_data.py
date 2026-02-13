@@ -1,13 +1,14 @@
+import ast
 import csv
 import sys
-import pandas as pd
 from pathlib import Path
-import ast
 
-from src.utils.routes import CSV_2022, CSV_2023, CSV_2024, META_FILE, DATA_CLEAN
-from src.data.schema import Description, Metadata
+import pandas as pd
+
 from src.data.clean_data import clean
 from src.data.merge_sources import merge_data
+from src.data.schema import Description, Metadata
+from src.utils.routes import CSV_2022, CSV_2023, CSV_2024, DATA_CLEAN, META_FILE
 
 csv.field_size_limit(
     sys.maxsize

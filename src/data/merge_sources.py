@@ -1,5 +1,6 @@
 import pandas as pd
-from src.data.schema import Metadata, Description
+
+from src.data.schema import Description, Metadata
 
 
 def multiple_ods(meta: pd.DataFrame) -> pd.DataFrame:
