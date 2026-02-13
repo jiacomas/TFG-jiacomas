@@ -17,19 +17,19 @@ def load_clean_data(filepath: Path = DATA_CLEAN):
 
 def visualize_ods(data: pd.DataFrame = None):
     from src.data.analysis.analysis import count_ods, clean_nan
-    from src.data.analysis.visualize import visualize_ods, save_visualization, visualize_ods_percentage
+    from src.data.analysis.visualize import bar_chart_ods, save_visualization, bar_chart_ods_percentage
 
     data = data or load_clean_data()
     data = clean_nan(data)
     ods_count = count_ods(data)
-    ods = visualize_ods(ods_count)
-    percentage = visualize_ods_percentage(ods_count)
+    ods = bar_chart_ods(ods_count)
+    percentage = bar_chart_ods_percentage(ods_count)
     save_visualization(ods, ODS_VISUALIZATION)
     save_visualization(percentage, ODS_PERCENTAGE_VISUALIZATION)
 
 if __name__ == "__main__":
-    # from src.data.analysis.analysis import main
-    # main()
+    from src.data.analysis.analysis import main
+    main()
 
-    visualize_ods()
+    # visualize_ods()
     
