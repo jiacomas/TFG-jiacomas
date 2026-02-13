@@ -30,7 +30,7 @@ El repositori està estructurat de la següent manera:
 │   │   ├── schema.py
 │   │   └── analysis/       # Anàlisi de dades
 │   │       ├── analysis.py
-│   │       └── utils.py
+│   │       └── visualize.py
 │   │
 │   ├── models/             # Implementació dels models
 │   │   ├── model_a.py
@@ -55,6 +55,7 @@ El repositori està estructurat de la següent manera:
 │   ├── metrics.csv
 │   └── summary.md
 │
+├── .pre-commit-config.yaml # Configuració del pre-commit
 ├── requirements.txt        # Dependències
 ├── README.md               # Descripció del projecte
 └── main.py                 # Script principal
