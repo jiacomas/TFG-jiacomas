@@ -24,10 +24,16 @@ EDA_DIR = RESULTS_DIR / "eda"
 
 ODS_VISUALIZATION = EDA_DIR / "ods_visualization.png"
 ODS_PERCENTAGE_VISUALIZATION = EDA_DIR / "ods_percentage_visualization.png"
-ODS_DISTRIBUTION_REGISTER_VISUALIZATION = EDA_DIR / "ods_distribution_register_visualization.png"
+ODS_DISTRIBUTION_REGISTER_VISUALIZATION = (
+    EDA_DIR / "ods_distribution_register_visualization.png"
+)
 ODS_CORRELATION_VISUALIZATION = EDA_DIR / "ods_correlation_visualization.png"
-LENGTH_DESCRIPTION_HISTOGRAM_VISUALIZATION = EDA_DIR / "length_description_histogram_visualization.png"
-LENGTH_DESCRIPTION_BOXPLOT_VISUALIZATION = EDA_DIR / "length_description_boxplot_visualization.png"
+LENGTH_DESCRIPTION_HISTOGRAM_VISUALIZATION = (
+    EDA_DIR / "length_description_histogram_visualization.png"
+)
+LENGTH_DESCRIPTION_BOXPLOT_VISUALIZATION = (
+    EDA_DIR / "length_description_boxplot_visualization.png"
+)
 ORGANIZATION_VISUALIZATION = EDA_DIR / "organization_visualization.png"
 HEATMAP_CONCURRENCY_ODS = EDA_DIR / "heatmap_concurrency_ods.png"
 ORGANIZATION_CSV = EDA_DIR / "organization.csv"

@@ -3,15 +3,15 @@ from pathlib import Path
 import pandas as pd
 
 ODS_COLORS = {
-    "ODS 1":  "#E5243B",
-    "ODS 2":  "#DDA63A",
-    "ODS 3":  "#4C9F38",
-    "ODS 4":  "#C5192D",
-    "ODS 5":  "#FF3A21",
-    "ODS 6":  "#26BDE2",
-    "ODS 7":  "#FCC30B",
-    "ODS 8":  "#A21942",
-    "ODS 9":  "#FD6925",
+    "ODS 1": "#E5243B",
+    "ODS 2": "#DDA63A",
+    "ODS 3": "#4C9F38",
+    "ODS 4": "#C5192D",
+    "ODS 5": "#FF3A21",
+    "ODS 6": "#26BDE2",
+    "ODS 7": "#FCC30B",
+    "ODS 8": "#A21942",
+    "ODS 9": "#FD6925",
     "ODS 10": "#DD1367",
     "ODS 11": "#FD9D24",
     "ODS 12": "#BF8B2E",
@@ -41,13 +41,7 @@ def bar_chart_ods(ods_count: dict[str, int]):
     ax.tick_params(axis="x", rotation=45)
 
     # Grid
-    ax.grid(
-        axis="y",
-        linestyle="--",
-        linewidth=0.7,
-        alpha=0.6,
-        color="gray"
-    )
+    ax.grid(axis="y", linestyle="--", linewidth=0.7, alpha=0.6, color="gray")
     ax.set_axisbelow(True)
 
     # Values on top of each bar
@@ -60,7 +54,7 @@ def bar_chart_ods(ods_count: dict[str, int]):
             textcoords="offset points",
             ha="center",
             va="bottom",
-            fontsize=9
+            fontsize=9,
         )
 
     # Legend with total
@@ -87,13 +81,7 @@ def bar_chart_ods_percentage(ods_count: dict[str, int]):
     ax.tick_params(axis="x", rotation=45)
 
     # Grid
-    ax.grid(
-        axis="y",
-        linestyle="--",
-        linewidth=0.7,
-        alpha=0.6,
-        color="gray"
-    )
+    ax.grid(axis="y", linestyle="--", linewidth=0.7, alpha=0.6, color="gray")
     ax.set_axisbelow(True)
 
     # Values on top of each bar
@@ -106,11 +94,12 @@ def bar_chart_ods_percentage(ods_count: dict[str, int]):
             textcoords="offset points",
             ha="center",
             va="bottom",
-            fontsize=9
+            fontsize=9,
         )
 
     fig.tight_layout()
     return fig
+
 
 def bar_chart_distribution_ods_register(ods_anunci_count: list[int]):
     fig, ax = plt.subplots()
@@ -128,13 +117,7 @@ def bar_chart_distribution_ods_register(ods_anunci_count: list[int]):
     ax.tick_params(axis="x")
 
     # Grid
-    ax.grid(
-        axis="y",
-        linestyle="--",
-        linewidth=0.7,
-        alpha=0.6,
-        color="gray"
-    )
+    ax.grid(axis="y", linestyle="--", linewidth=0.7, alpha=0.6, color="gray")
     ax.set_axisbelow(True)
 
     # Values on top of each bar
@@ -147,7 +130,7 @@ def bar_chart_distribution_ods_register(ods_anunci_count: list[int]):
             textcoords="offset points",
             ha="center",
             va="bottom",
-            fontsize=9
+            fontsize=9,
         )
 
     # Legend with total
@@ -155,6 +138,7 @@ def bar_chart_distribution_ods_register(ods_anunci_count: list[int]):
 
     fig.tight_layout()
     return fig
+
 
 def heatmap_correlation_ods(ods_correlation: pd.DataFrame):
     fig, ax = plt.subplots()
@@ -167,6 +151,7 @@ def heatmap_correlation_ods(ods_correlation: pd.DataFrame):
     fig.tight_layout()
     return fig
 
+
 def histogram_length_description(length_description: list[int]):
     fig, ax = plt.subplots()
     ax.hist(length_description, bins=20)
@@ -176,6 +161,7 @@ def histogram_length_description(length_description: list[int]):
     fig.tight_layout()
     return fig
 
+
 def box_plot_length_description(length_description: list[int]):
     fig, ax = plt.subplots()
     ax.boxplot(length_description)
@@ -184,6 +170,7 @@ def box_plot_length_description(length_description: list[int]):
     ax.set_title("Box plot de la longitud de la descripció")
     fig.tight_layout()
     return fig
+
 
 def bar_chart_organization(organization: dict[str, int]):
     fig, ax = plt.subplots()
