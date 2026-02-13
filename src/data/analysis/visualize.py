@@ -112,11 +112,7 @@ def bar_chart_ods_percentage(ods_count: dict[str, int]):
     fig.tight_layout()
     return fig
 
-def bar_chart_distribution_ods_register(ods_anunci: list[int]):
-    ods_anunci_count = {i: 0 for i in range(18)}
-    for ods in ods_anunci:
-        ods_anunci_count[len(ods)] += 1
-
+def bar_chart_distribution_ods_register(ods_anunci_count: list[int]):
     fig, ax = plt.subplots()
 
     # Bars color

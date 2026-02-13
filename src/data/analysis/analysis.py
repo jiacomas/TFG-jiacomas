@@ -1,3 +1,5 @@
+import csv
+from pathlib import Path
 import pandas as pd
 from src.data.schema import Metadata, Description
 
@@ -6,9 +8,10 @@ def clean_nan(data: pd.DataFrame) -> pd.DataFrame:
     return data
 
 def count_ods(data: pd.DataFrame) -> dict[str, int]:
-    ods_count = {f"ODS {i}": 0 for i in range(1, 18)}
+    count_aparicions_ods = {f"ODS {i}": 0 for i in range(1, 18)}
     ods_anunci = []
-    ods_concurrency = []
+    num_ods_anunci = {i: 0 for i in range(18)}
+
 
     for _, row in data.iterrows():
         analyse_ods = row[Metadata.ODS]
@@ -19,14 +22,13 @@ def count_ods(data: pd.DataFrame) -> dict[str, int]:
             if key in temp_ods:
                 continue
             temp_ods.append(key)
-            if key in ods_count:
-                ods_count[key] += 1
-        
-        # if len(analyse_ods) != len(temp_ods):
-        #     print(row[Metadata.ID], row[Metadata.PDF_URL])
+            if key in count_aparicions_ods:
+                count_aparicions_ods[key] += 1
+
+        num_ods_anunci[len(temp_ods)] += 1        
         ods_anunci.append(temp_ods)
 
-    return ods_count, ods_anunci
+    return count_aparicions_ods, ods_anunci, num_ods_anunci
 
 def get_correlation(ods_anunci: list[list[str]]) -> pd.DataFrame:
     ods_labels = [f"ODS {i}" for i in range(1, 18)]
@@ -61,64 +63,10 @@ def get_organization(data: pd.DataFrame) -> dict[str, int]:
             org_count[org] = 1
     return dict(sorted(org_count.items()))
 
-from pathlib import Path
-import csv
-
 def save_dict(data: dict, filepath: Path):
     with open(filepath, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["ORG", "APARICIONS"])
         for key, value in data.items():
             writer.writerow([key, value])
-
-
-def main():
-    from src.data.load_data import get_clean_data
-    from src.data.analysis.visualize import save_visualization
-    from src.utils.routes import (ODS_VISUALIZATION, ODS_PERCENTAGE_VISUALIZATION, 
-                                LENGTH_DESCRIPTION_HISTOGRAM_VISUALIZATION, LENGTH_DESCRIPTION_BOXPLOT_VISUALIZATION,
-                                ORGANIZATION_VISUALIZATION, HEATMAP_CONCURRENCY_ODS, ORGANIZATION_CSV, 
-                                ODS_DISTRIBUTION_REGISTER_VISUALIZATION, ODS_CORRELATION_VISUALIZATION)
-
-    data = get_clean_data()
-
-    print("Anuncis carregats:", len(data))
-
-    data = clean_nan(data)
-    print("Anuncis sense NaN:", len(data))
-
-    count, ods_anunci = count_ods(data)
-
-    repeat_ods = [len(ods) for ods in ods_anunci]
-
-    print("\nMitjana ODS per anunci:", get_average(repeat_ods))
-    print("Màxim ODS per anunci:", get_max(repeat_ods))
-    print("Distribució dels ODS:", count)
-
-    concurrency = get_correlation(ods_anunci)
-    print("Concurrencia dels ODS:", concurrency)
-
-    if input("visualitzar? Y/N: ").upper() == "Y":
-        from src.data.analysis.visualize import bar_chart_ods, bar_chart_ods_percentage, bar_chart_distribution_ods_register, heatmap_correlation_ods
-        save_visualization(bar_chart_ods(count), ODS_VISUALIZATION)
-        save_visualization(bar_chart_ods_percentage(count), ODS_PERCENTAGE_VISUALIZATION)
-        save_visualization(bar_chart_distribution_ods_register(ods_anunci), ODS_DISTRIBUTION_REGISTER_VISUALIZATION)
-        save_visualization(heatmap_correlation_ods(concurrency), ODS_CORRELATION_VISUALIZATION)
-
-    length_description = get_length_description(data)
-    print("\nMitjana longitud descripció:", get_average(length_description))
-    print("Màxim longitud descripció:", get_max(length_description))
-    print("Mínim longitud descripció:", get_min(length_description))
-    if input("visualitzar? Y/N: ").upper() == "Y":
-        from src.data.analysis.visualize import box_plot_length_description, histogram_length_description
-        save_visualization(histogram_length_description(length_description), LENGTH_DESCRIPTION_HISTOGRAM_VISUALIZATION)
-        save_visualization(box_plot_length_description(length_description), LENGTH_DESCRIPTION_BOXPLOT_VISUALIZATION)
-
-    organization = get_organization(data)
-    # print("\nOrganització:", organization)
-    if input("visualitzar? Y/N: ").upper() == "Y":
-        from src.data.analysis.visualize import bar_chart_organization
-        save_visualization(bar_chart_organization(organization), ORGANIZATION_VISUALIZATION)
-    save_dict(organization, ORGANIZATION_CSV)
-
-    print("\nFINAL")
+    
