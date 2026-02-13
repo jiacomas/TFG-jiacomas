@@ -1,45 +1,45 @@
 import pandas as pd
 from pathlib import Path
-from src.utils.routes import DATA_CLEAN, ODS_VISUALIZATION, ODS_PERCENTAGE_VISUALIZATION
-
-
-def load_raw_data(save=True, filepath: Path = DATA_CLEAN):
-    from src.data.load_data import create_clean_data
-    from src.data.save_data import save_data
-
-    merged = create_clean_data()
-    if save:
-        save_data(merged, filepath)
-    return merged
-
-
-def visualize_data(data: pd.DataFrame = None):
-    from src.data.load_data import get_clean_data
-    from src.data.analysis.analysis import (
-        count_ods,
-        clean_nan,
-        get_correlation,
-        get_average,
+from src.data.load_data import create_clean_data, get_clean_data
+from src.data.save_data import save_data
+from src.data.analysis.analysis import (
+    count_ods,
+    clean_nan,
+    get_correlation,
+    get_average,
         get_max,
         get_min,
         get_length_description,
         get_organization,
         save_dict,
     )
-    from src.data.analysis.visualize import save_visualization
-    from src.utils.routes import (
-        ODS_VISUALIZATION,
-        ODS_PERCENTAGE_VISUALIZATION,
+from src.utils.routes import (DATA_CLEAN, ODS_VISUALIZATION, ODS_PERCENTAGE_VISUALIZATION,
         LENGTH_DESCRIPTION_HISTOGRAM_VISUALIZATION,
         LENGTH_DESCRIPTION_BOXPLOT_VISUALIZATION,
         ORGANIZATION_VISUALIZATION,
-        HEATMAP_CONCURRENCY_ODS,
         ORGANIZATION_CSV,
         ODS_DISTRIBUTION_REGISTER_VISUALIZATION,
         ODS_CORRELATION_VISUALIZATION,
     )
+from src.data.analysis.visualize import (
+            bar_chart_ods,
+            bar_chart_ods_percentage,
+            bar_chart_distribution_ods_register,
+            heatmap_correlation_ods,
+            bar_chart_organization,box_plot_length_description,histogram_length_description,
+            save_visualization
+        )
 
-    data = get_clean_data()
+Y_value = "Y"
+
+def load_raw_data(save=True, filepath: Path = DATA_CLEAN):
+    merged = create_clean_data()
+    if save:
+        save_data(merged, filepath)
+    return merged
+
+def visualize_data(data: pd.DataFrame = None):
+    data = data or get_clean_data()
 
     print("Anuncis carregats:", len(data))
 
@@ -57,14 +57,8 @@ def visualize_data(data: pd.DataFrame = None):
     concurrency = get_correlation(ods_anunci)
     print("Concurrencia dels ODS:", concurrency)
 
-    if input("visualitzar ODS? Y/N: ").upper() == "Y":
-        from src.data.analysis.visualize import (
-            bar_chart_ods,
-            bar_chart_ods_percentage,
-            bar_chart_distribution_ods_register,
-            heatmap_correlation_ods,
-        )
-
+    response = input("visualitzar ODS? Y/N: ").strip().upper()
+    if response == Y_value:
         save_visualization(bar_chart_ods(count), ODS_VISUALIZATION)
         save_visualization(
             bar_chart_ods_percentage(count), ODS_PERCENTAGE_VISUALIZATION
@@ -81,12 +75,9 @@ def visualize_data(data: pd.DataFrame = None):
     print("\nMitjana longitud descripció:", get_average(length_description))
     print("Màxim longitud descripció:", get_max(length_description))
     print("Mínim longitud descripció:", get_min(length_description))
-    if input("visualitzar Longitud descripció? Y/N: ").upper() == "Y":
-        from src.data.analysis.visualize import (
-            box_plot_length_description,
-            histogram_length_description,
-        )
 
+    response = input("visualitzar Longitud descripció? Y/N: ").strip().upper()
+    if response == Y_value:
         save_visualization(
             histogram_length_description(length_description),
             LENGTH_DESCRIPTION_HISTOGRAM_VISUALIZATION,
@@ -97,10 +88,8 @@ def visualize_data(data: pd.DataFrame = None):
         )
 
     organization = get_organization(data)
-    # print("\nOrganització:", organization)
-    if input("visualitzar Organització? Y/N: ").upper() == "Y":
-        from src.data.analysis.visualize import bar_chart_organization
-
+    response = input("visualitzar Organització? Y/N: ").strip().upper()
+    if response == Y_value:
         save_visualization(
             bar_chart_organization(organization), ORGANIZATION_VISUALIZATION
         )

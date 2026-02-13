@@ -35,5 +35,4 @@ LENGTH_DESCRIPTION_BOXPLOT_VISUALIZATION = (
     EDA_DIR / "length_description_boxplot_visualization.png"
 )
 ORGANIZATION_VISUALIZATION = EDA_DIR / "organization_visualization.png"
-HEATMAP_CONCURRENCY_ODS = EDA_DIR / "heatmap_concurrency_ods.png"
 ORGANIZATION_CSV = EDA_DIR / "organization.csv"
