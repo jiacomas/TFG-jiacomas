@@ -7,36 +7,43 @@ from src.data.analysis.analysis import (
     clean_nan,
     get_correlation,
     get_average,
-        get_max,
-        get_min,
-        get_length_description,
-        get_organization,
-        save_dict,
-    )
-from src.utils.routes import (DATA_CLEAN, ODS_VISUALIZATION, ODS_PERCENTAGE_VISUALIZATION,
-        LENGTH_DESCRIPTION_HISTOGRAM_VISUALIZATION,
-        LENGTH_DESCRIPTION_BOXPLOT_VISUALIZATION,
-        ORGANIZATION_VISUALIZATION,
-        ORGANIZATION_CSV,
-        ODS_DISTRIBUTION_REGISTER_VISUALIZATION,
-        ODS_CORRELATION_VISUALIZATION,
-    )
+    get_max,
+    get_min,
+    get_length_description,
+    get_organization,
+    save_dict,
+)
+from src.utils.routes import (
+    DATA_CLEAN,
+    ODS_VISUALIZATION,
+    ODS_PERCENTAGE_VISUALIZATION,
+    LENGTH_DESCRIPTION_HISTOGRAM_VISUALIZATION,
+    LENGTH_DESCRIPTION_BOXPLOT_VISUALIZATION,
+    ORGANIZATION_VISUALIZATION,
+    ORGANIZATION_CSV,
+    ODS_DISTRIBUTION_REGISTER_VISUALIZATION,
+    ODS_CORRELATION_VISUALIZATION,
+)
 from src.data.analysis.visualize import (
-            bar_chart_ods,
-            bar_chart_ods_percentage,
-            bar_chart_distribution_ods_register,
-            heatmap_correlation_ods,
-            bar_chart_organization,box_plot_length_description,histogram_length_description,
-            save_visualization
-        )
+    bar_chart_ods,
+    bar_chart_ods_percentage,
+    bar_chart_distribution_ods_register,
+    heatmap_correlation_ods,
+    bar_chart_organization,
+    box_plot_length_description,
+    histogram_length_description,
+    save_visualization,
+)
 
 Y_value = "Y"
+
 
 def load_raw_data(save=True, filepath: Path = DATA_CLEAN):
     merged = create_clean_data()
     if save:
         save_data(merged, filepath)
     return merged
+
 
 def visualize_data(data: pd.DataFrame = None):
     data = data or get_clean_data()

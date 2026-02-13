@@ -1,3 +1,7 @@
+# pre-commit
+pre-commit
+black
+
 # Data processing
 pandas
 numpy
