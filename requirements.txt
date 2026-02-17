@@ -1,7 +1,12 @@
+# pre-commit
+pre-commit
+black
+
 # Data processing
 pandas
 numpy
 openpyxl
+matplotlib
 
 # NLP libraries
 spacy

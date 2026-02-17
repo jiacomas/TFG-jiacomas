@@ -1,5 +1,7 @@
 from pathlib import Path
+
 import pandas as pd
+
 
 def save_data(data: pd.DataFrame, filepath: Path):
     """

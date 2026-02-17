@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class Description:
     ID_REGISTRE: str = "id"
