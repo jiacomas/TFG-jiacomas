@@ -6,6 +6,7 @@ class Description:
     ID_REGISTRE: str = "id"
     TEXT_RAW: str = "text"
     TEXT_CLEAN: str = "text_clean"
+    YEAR: str = "any_publicacio"
 
 
 @dataclass
@@ -18,4 +19,6 @@ class Metadata:
     TITLE_CLEAN: str = "ANH_TITOL_CLEAN"
     TYPE: str = "Tipus Anunci"
     ODS: list[str] = "ODS_NOM"
+    ODS_LIST: list[str] = "ods_list"
     PDF_URL: str = "PDF"
+    FULL_TEXT: str = "text_final"
