@@ -2,7 +2,7 @@
 RAW_METADATA_PATH = "../data/raw/Anuncis_2022_2024.xlsx"
 RAW_TEXT_CSV_DIR = "../data/raw/description/"  # 2022.csv, 2023.csv, 2024.csv
 OUTPUT_DIR = "../data/processed/"
-OUTPUT_DIR_ANALYSIS = "../data/analysis/"
+OUTPUT_DIR_EDA = "../figures/eda/"
 
 # --- Configuració general ---
 RANDOM_SEED = 42

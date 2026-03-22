@@ -4,11 +4,11 @@ TFG 66910
 
 ## Informació del TFG
 
-**Autor/a**: Jia Chun Comas Frigola
-**Tutor/a**: Dr. Antonio Lozano Bagen
-**Grau**: Grau en Enginyeria de Dades
-**Universitat**: Universitat Autònoma de Barcelona
-**Curs acadèmic**: 2025–2026
+- **Autor/a**: Jia Chun Comas Frigola
+- **Tutor/a**: Dr. Antonio Lozano Bagen
+- **Grau**: Grau en Enginyeria de Dades
+- **Universitat**: Universitat Autònoma de Barcelona
+- **Curs acadèmic**: 2025 – 2026
 
 ## Estructura del repositori
 
@@ -16,49 +16,50 @@ El repositori està estructurat de la següent manera:
 
 ```bash
 /
-├── data/                   # Dades del projecte
-│   ├── raw/                # Dades originals (en format PDF)
-│   ├── processed/          # Dades preprocessades
-│   └── splits/             # Train / validation / test
 │
-├── src/                    # Codi font principal
-│   ├── data/               # Càrrega i preprocessament de dades
-│   │   ├── load_data.py
-│   │   ├── merge_sources.py
-│   │   ├── clean_data.py
-│   │   ├── save_data.py
-│   │   ├── schema.py
-│   │   └── analysis/       # Anàlisi de dades
-│   │       ├── analysis.py
-│   │       └── visualize.py
-│   │
-│   ├── models/             # Implementació dels models
-│   │   ├── model_a.py
-│   │   ├── model_b.py
-│   │   └── model_c.py
-│   │
-│   ├── evaluation/         # Avaluació i comparació
-│   │   ├── metrics.py
-│   │   └── compare.py
-│   │
-│   └── utils/              # Funcions auxiliars
-│       ├── config.py
-│       ├── routes.py
-│       └── seed.py
+├── data/
+│   ├── analysis/                   ← resultats de l'EDA (notebook 02)
+│   ├── processed/                  ← output del notebook 01
+│   └── raw/                        ← dades originals, mai es modifiquen
+│       ├── Anuncis_2022_2024.xlsx
+│       └── description/
+│           ├── anuncis_BOPB_2022_contingut.csv
+│           ├── anuncis_BOPB_2023_contingut.csv
+│           └── anuncis_BOPB_2024_contingut.csv
 │
-├── experiments/            # Resultats d’experiments
-│   ├── exp_01/
-│   └── exp_02/
+├── notebooks/
+│   ├── 01_data_preparation.ipynb
+│   ├── 02_eda.ipynb
+│   ├── 03_ml_classic.ipynb         ← SVM, Random Forest, XGBoost
+│   ├── 04_deep_learning.ipynb      ← CNN, LSTM
+│   └── 05_transformers.ipynb       ← BERT, fine-tuning
 │
-├── results/                # Resultats finals
-│   ├── plots/              # Gràfiques i taules
-│   ├── metrics.csv
-│   └── summary.md
+├── src/
+│   ├── metrics.py                  ← Hamming Loss, F1, Jaccard, etc.
+│   ├── schema.py                   ← schema de dades
+│   ├── utils.py                    ← paths i funcions generals
+│   └── models/
+│       ├── ml_classic.py           ← classes/funcions dels models ML
+│       ├── deep_learning.py        ← arquitectures CNN i LSTM
+│       └── transformers.py         ← fine-tuning BERT
 │
-├── .pre-commit-config.yaml # Configuració del pre-commit
-├── requirements.txt        # Dependències
-├── README.md               # Descripció del projecte
-└── main.py                 # Script principal
+├── models/                         ← models entrenats guardats
+│   ├── svm_br.pkl
+│   ├── lstm_model.pt
+│   └── bert_finetuned/
+│
+├── results/                        ← mètriques i comparatives
+│   ├── metrics_ml_classic.csv
+│   ├── metrics_deep_learning.csv
+│   ├── metrics_transformers.csv
+│   └── comparison_summary.csv
+│
+├── figures/                        ← gràfics generats (EDA + resultats)
+│
+├── .gitignore                      ← exclou data/raw, models pesants, etc.
+├── .pre-commit-config.yaml         ← configuració del pre-commit
+├── README.md                       ← descripció del projecte
+└── requirements.txt                ← llibreries necessàries
 
 ```
 
@@ -66,6 +67,16 @@ El repositori està estructurat de la següent manera:
 
 ```bash
 git clone https://github.com/jiacomas/TFG.git
+
+# create virtual environment
+python -m venv .venv
+
+# activate virtual environment
+source .venv/bin/activate
+
+# install dependencies
 pip install -r requirements.txt
+
+# run main script
 python main.py
 ```
