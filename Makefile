@@ -1,23 +1,28 @@
-.PHONY: install hooks clean
+.PHONY: install clean train status logs
 
+# Setup the environment and pre-commit hooks
 install:
-	@echo "→ Installing Python dependencies..."
+	@echo "Installing dependencies..."
 	pip install -r requirements.txt
-	@echo "→ Installing pre-commit hooks..."
 	pre-commit install
-	@echo ""
-	@echo "⚠️  macOS only: if XGBoost fails to import, run:"
-	@echo "   brew install libomp"
-	@echo ""
-	@echo "✓ Environment ready. Run: jupyter lab"
+	@mkdir -p logs models results figures
 
-hooks:
-	@echo "→ Running pre-commit on all files..."
-	pre-commit run --all-files
+# Submit the training job to the Slurm queue
+train:
+	@echo "Submitting job to Slurm..."
+	sbatch train_launcher.sh
 
+# Check the status of your jobs in the queue
+status:
+	squeue -u jccomas
+
+# Follow the error logs in real-time
+logs:
+	tail -f logs/*.err
+
+# Clean up temporary Python files and checkpoints
 clean:
-	@echo "→ Removing compiled Python files..."
 	find . -type f -name "*.pyc" -delete
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -type d -name ".ipynb_checkpoints" -exec rm -rf {} +
-	@echo "✓ Clean done."
+	@echo "Clean up complete."

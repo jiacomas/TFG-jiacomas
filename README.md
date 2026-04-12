@@ -31,10 +31,7 @@ Com que un sol anunci pot associar-se a diversos ODS simultàniament, el problem
 │
 ├── notebooks/
 │   ├── 01_data_preparation.ipynb   ← integració, neteja i splits
-│   ├── 02_eda.ipynb                ← anàlisi exploratòria de dades
-│   ├── 03_ml_classic.ipynb         ← SVM, Random Forest, XGBoost
-│   ├── 04_deep_learning.ipynb      ← CNN, BiLSTM
-│   └── 05_transformers.ipynb       ← RoBERTa, fine-tuning
+│   └── 02_eda.ipynb                ← anàlisi exploratòria de dades
 │
 ├── src/
 │   ├── metrics.py                  ← Hamming Loss, F1, Jaccard, etc.
@@ -42,16 +39,14 @@ Com que un sol anunci pot associar-se a diversos ODS simultàniament, el problem
 │   ├── utils.py                    ← paths i configuració global
 │   └── models/
 │       ├── ml_classic.py
-│       ├── deep_learning.py
-│       └── transformers.py
+│       └── deep_learning.py # TODO
 │
+├── figures/                        ← gràfics generats per EDA i resultats
 ├── models/                         ← models entrenats guardats (.pkl, .pt)
 ├── results/                        ← mètriques i comparatives (.csv)
-├── figures/                        ← gràfics generats per EDA i resultats
 │
 ├── .gitignore
 ├── .pre-commit-config.yaml
-├── Makefile
 ├── README.md
 └── requirements.txt
 ```
@@ -77,6 +72,9 @@ cd TFG-jiacomas
 python -m venv tfg
 source tfg/bin/activate        # macOS / Linux
 # tfg\Scripts\activate         # Windows
+
+conda create -n tfg python=3.11 -y # create miniconda environment
+conda activate tfg
 ```
 
 ### 3. Dependències de sistema
@@ -96,20 +94,7 @@ brew install libomp
 
 ### 4. Instal·la les dependències de Python
 
-```bash
-pip install -r requirements.txt
-```
-
-### 5. Instal·la els hooks de pre-commit
-
-```bash
-pre-commit install
-```
-
-A partir d'aquest moment, cada `git commit` executarà automàticament `black`, `ruff` i `isort` sobre el codi i les cel·les dels notebooks.
-
-### Instal·lació en un sol pas (via Makefile)
-
+Instal·lació en un sol pas (via Makefile):
 ```bash
 make install
 ```
@@ -125,10 +110,7 @@ jupyter lab
 | Notebook              | Descripció                                        | Output principal                    |
 | --------------------- | ------------------------------------------------- | ----------------------------------- |
 | `01_data_preparation` | Integració XLSX + CSV, neteja, splits             | `data/processed/`                   |
-| `02_eda`              | Distribució ODS, co-ocurrències, longitud de text | `data/analysis/`, `figures/`        |
-| `03_ml_classic`       | BR, CC, LP amb SVM / LR / RF / XGBoost            | `results/metrics_ml_classic.csv`    |
-| `04_deep_learning`    | CNN i BiLSTM amb PyTorch                          | `results/metrics_deep_learning.csv` |
-| `05_transformers`     | Fine-tuning RoBERTa (PlanTL-GOB-ES)               | `results/metrics_transformers.csv`  |
+| `02_eda`              | Distribució ODS, co-ocurrències, longitud de text | `figures/eda`                       |
 
 > ⚠️ El conjunt de test (`data/processed/split_test.parquet`) **no s'avalua fins al final**, un cop la selecció de models entre els notebooks 03–05 és definitiva.
 
@@ -136,11 +118,10 @@ jupyter lab
 
 Tots els experiments es registren a [Weights & Biases](https://wandb.ai) sota el projecte `bopb-ods-multilabel`. Cada notebook correspon a un run independent:
 
-| Run W&B            | Notebook | Models                       |
-| ------------------ | -------- | ---------------------------- |
-| `03_ml_classic`    | 03       | BR/CC/LP × LR/SVM/RF/XGBoost |
-| `04_deep_learning` | 04       | TextCNN, BiLSTM              |
-| `05_transformers`  | 05       | RoBERTa-BNE, mBERT           |
+| Run W&B            |  Models                 |
+| ------------------ | ------------------------|
+| `ml_classic.py`    | Random forest & XGBoost |
+| `deep_learning`    | BERTa x BiLSTM          |
 
 Per accedir al dashboard:
 
