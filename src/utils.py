@@ -1,8 +1,13 @@
 # --- Paths ---
-RAW_METADATA_PATH = "../data/raw/Anuncis_2022_2024.xlsx"
-RAW_TEXT_CSV_DIR = "../data/raw/description/"  # 2022.csv, 2023.csv, 2024.csv
-OUTPUT_DIR = "../data/processed/"
-OUTPUT_DIR_EDA = "../figures/eda/"
+DATA_DIR = "../data"
+RAW_METADATA_PATH = f"{DATA_DIR}/raw/Anuncis_2022_2024.xlsx"
+RAW_TEXT_CSV_DIR = f"{DATA_DIR}/raw/description"  # 2022, 2023, 2024
+
+OUTPUT_DIR = f"{DATA_DIR}/processed"
+PROCESSED_ML_DIR = f"{OUTPUT_DIR}/ml"
+PROCESSED_DL_DIR = f"{OUTPUT_DIR}/dl"
+
+OUTPUT_DIR_EDA = "../figures/eda"
 
 # --- Configuració general ---
 RANDOM_SEED = 42

@@ -1,23 +1,37 @@
-# pre-commit
+# Development tools & Code quality
 pre-commit
 black
+ruff
+nbqa
 
-# Data processing
-pandas
+# Jupyter environment
+jupyterlab
+ipykernel
+
+# Data I/O & Processing
+pandas>=2.0.0
 numpy
 openpyxl
-matplotlib
-seaborn
-pyarrow
+pyarrow        # Critical for .parquet support
+fastparquet    # Alternative for .parquet
+scipy
+
+# NLP & Text Preprocessing
+spacy>=3.7.0
+# After installing, run: python -m spacy download ca_core_news_lg
+
+# Machine Learning — Classical models
+scikit-learn
 iterative-stratification
+xgboost
 
-# NLP libraries
-spacy
-stanza
-nltk
-
-# Machine learning & deep learning
+# Deep Learning & Transformers
 torch
 transformers
-pytorch-lightning
-scikit-learn
+datasets
+accelerate
+
+# Experiment tracking & Utils
+wandb
+psutil
+joblib
