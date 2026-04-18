@@ -9,12 +9,16 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = PROJECT_ROOT / "data"
 RAW_METADATA_PATH = DATA_DIR / "raw" / "Anuncis_2022_2024.xlsx"
 RAW_TEXT_CSV_DIR = DATA_DIR / "raw" / "description"
-PROCESSED_OUTPUT_DIR = DATA_DIR / "processed"
+
+OUTPUT_DIR = DATA_DIR / "processed"
+PROCESSED_ML_DIR = OUTPUT_DIR / "ml"
+PROCESSED_DL_DIR = OUTPUT_DIR / "dl"
+
 OUTPUT_DIR_EDA = PROJECT_ROOT / "figures" / "eda"
 MODELS_DIR = PROJECT_ROOT / "models"
 
 # Ensure directories exist so the script doesn't fail when saving
-PROCESSED_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 OUTPUT_DIR_EDA.mkdir(parents=True, exist_ok=True)
 MODELS_DIR.mkdir(parents=True, exist_ok=True)
 
