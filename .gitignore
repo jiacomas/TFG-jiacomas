@@ -6,9 +6,11 @@ logs/
 
 # virtual environment
 /tfg/
+.env
 
 # data
 /data/
+models/
 
 # logs
 logs/

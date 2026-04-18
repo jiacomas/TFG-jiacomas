@@ -1,60 +1,80 @@
+import os
+import pickle
 import time
 
 import joblib
 import pandas as pd
-import wandb
 from xgboost import XGBClassifier
 
+import wandb
 from src.metrics import compute_all_metrics, log_efficiency
 from src.utils import MODELS_DIR, ODS_ALL, PROCESSED_ML_DIR
 
 
 def train_xgboost():
-    # Initialize W&B Run
     run = wandb.init(
         entity="TFG-66910",
         project="bopb-ods-multilabel",
         job_type="train",
         name="xgboost-multilabel",
         config={
-            "learning_rate": 0.3,  # Hyperparameter for XGBoost
+            "learning_rate": 0.3,
             "architecture": "XGBoost",
             "dataset": "train.parquet",
-            "n_estimators": 100,  # Number of boosting rounds
-            "tree_method": "gpu_hist",  # Crucial for using the 3090 GPU
+            "n_estimators": 100,
+            "tree_method": "gpu_hist",
         },
     )
 
-    # Load preprocessed datasets
+    # Load data
     train_df = pd.read_parquet(f"{PROCESSED_ML_DIR}/split_train.parquet")
     test_df = pd.read_parquet(f"{PROCESSED_ML_DIR}/split_test.parquet")
 
-    X_train, y_train = train_df.drop(columns=ODS_ALL), train_df[ODS_ALL]
-    X_test, y_test = test_df.drop(columns=ODS_ALL), test_df[ODS_ALL]
+    X_train_text = train_df["text_ml"]
+    X_test_text = test_df["text_ml"]
 
-    # Model definition: XGBoost with GPU acceleration
+    y_train = train_df[ODS_ALL]
+    y_test = test_df[ODS_ALL]
+
+    # Load TF-IDF + MLB (ja entrenats)
+    with open(os.path.join(PROCESSED_ML_DIR, "tfidf_model.pkl"), "rb") as f:
+        tfidf = pickle.load(f)
+
+    # with open(os.path.join(PROCESSED_ML_DIR, "mlb.pkl"), "rb") as f:
+    #     mlb = pickle.load(f)
+
+    # Vectorització (IMPORTANT: només transform)
+    X_train = tfidf.transform(X_train_text)
+    X_test = tfidf.transform(X_test_text)
+
+    # (Opcional) assegurar format correcte de y
+    # y_train = mlb.transform(y_train)  # només si NO està ja binaritzat
+    # y_test = mlb.transform(y_test)
+
+    # Load Model
     model = XGBClassifier(
-        tree_method=run.config.tree_method,
+        tree_method="hist",
+        device="cuda",
         predictor="gpu_predictor",
         learning_rate=run.config.learning_rate,
         n_estimators=run.config.n_estimators,
         callbacks=[wandb.xgboost.WandbCallback()],
     )
 
-    # Train and measure time
+    # Train
     start_t = time.time()
     model.fit(X_train, y_train)
     end_t = time.time()
 
-    # Log computational efficiency
     log_efficiency(start_t, end_t, "xgboost")
 
-    # Evaluation
+    # Evaluate + log metrics
     preds = model.predict(X_test)
     compute_all_metrics(y_test, preds, step_name="test")
 
-    # Save artifact
+    # Save model
     joblib.dump(model, f"{MODELS_DIR}/xgboost_multilabel.pkl")
+
     run.finish()
 
 

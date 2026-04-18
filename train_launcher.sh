@@ -18,12 +18,11 @@ source /fhome/jccomas/miniconda3/etc/profile.d/conda.sh
 # 2. Activate your environment by path
 conda activate /fhome/jccomas/miniconda3/envs/tfg
 
-# 3. Weights & Biases configuration
-export WANDB_API_KEY="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"
-export WANDB_MODE="online"
+# 3. Load environment variables from .env
+set -a
+source .env
+set +a
 
-# 4. Add the current directory to PYTHONPATH
-# This ensures "import src" works correctly
 export PYTHONPATH=$PYTHONPATH:$(pwd)
 
 echo "Job started on $(hostname) at $(date)"
