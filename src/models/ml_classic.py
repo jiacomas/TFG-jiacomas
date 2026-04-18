@@ -2,11 +2,11 @@ import time
 
 import joblib
 import pandas as pd
+import wandb
 from xgboost import XGBClassifier
 
-import wandb
 from src.metrics import compute_all_metrics, log_efficiency
-from src.utils import MODELS_DIR, ODS_ALL, PROCESSED_OUTPUT_DIR
+from src.utils import MODELS_DIR, ODS_ALL, PROCESSED_ML_DIR
 
 
 def train_xgboost():
@@ -26,8 +26,8 @@ def train_xgboost():
     )
 
     # Load preprocessed datasets
-    train_df = pd.read_parquet(f"{PROCESSED_OUTPUT_DIR}/train.parquet")
-    test_df = pd.read_parquet(f"{PROCESSED_OUTPUT_DIR}/test.parquet")
+    train_df = pd.read_parquet(f"{PROCESSED_ML_DIR}/split_train.parquet")
+    test_df = pd.read_parquet(f"{PROCESSED_ML_DIR}/split_test.parquet")
 
     X_train, y_train = train_df.drop(columns=ODS_ALL), train_df[ODS_ALL]
     X_test, y_test = test_df.drop(columns=ODS_ALL), test_df[ODS_ALL]
