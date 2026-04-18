@@ -1,13 +1,21 @@
+from pathlib import Path
+
+# --- Dynamic Path Resolution ---
+# This finds the absolute path to the TFG-jiacomas folder,
+# ensuring scripts work regardless of where they are launched from.
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
 # --- Paths ---
-DATA_DIR = "../data"
+DATA_DIR = f"{PROJECT_ROOT}/data"
 RAW_METADATA_PATH = f"{DATA_DIR}/raw/Anuncis_2022_2024.xlsx"
-RAW_TEXT_CSV_DIR = f"{DATA_DIR}/raw/description"  # 2022, 2023, 2024
+RAW_TEXT_CSV_DIR = f"{DATA_DIR}/raw/description"
 
 OUTPUT_DIR = f"{DATA_DIR}/processed"
 PROCESSED_ML_DIR = f"{OUTPUT_DIR}/ml"
 PROCESSED_DL_DIR = f"{OUTPUT_DIR}/dl"
 
-OUTPUT_DIR_EDA = "../figures/eda"
+OUTPUT_DIR_EDA = f"{PROJECT_ROOT}/figures/eda"
+MODELS_DIR = f"{PROJECT_ROOT}/models"
 
 # --- Configuració general ---
 RANDOM_SEED = 42
