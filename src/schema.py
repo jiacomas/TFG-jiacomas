@@ -4,8 +4,7 @@ from dataclasses import dataclass
 @dataclass
 class Description:
     ID_REGISTRE: str = "id"
-    TEXT_RAW: str = "text"
-    TEXT_CLEAN: str = "text_clean"
+    TEXT: str = "text"
     YEAR: str = "any_publicacio"
 
 
@@ -16,9 +15,16 @@ class Metadata:
     ID_REGISTRE: str = "ANU_NUM_REGISTRE"
     ORGANIZATION: str = "ORG_NOM"
     TITLE: str = "ANH_TITOL"
-    TITLE_CLEAN: str = "ANH_TITOL_CLEAN"
     TYPE: str = "Tipus Anunci"
     ODS: list[str] = "ODS_NOM"
-    ODS_LIST: list[str] = "ods_list"
     PDF_URL: str = "PDF"
     FULL_TEXT: str = "text_final"
+
+
+@dataclass
+class ProcessedData:
+    ID: str = "ANH_ID"
+    FULL_TEXT: str = "full_text"
+    ODS_LIST: list[str] = "ods_list"
+    TEXT_DL: str = "text_dl"
+    TEXT_ML: str = "text_ml"
