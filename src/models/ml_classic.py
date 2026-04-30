@@ -1,144 +1,122 @@
 import os
 import pickle
-import time
+import sys
+from pathlib import Path
 
 import joblib
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.multioutput import MultiOutputClassifier
 from xgboost import XGBClassifier
 
 import wandb
-from src.metrics import compute_all_metrics, log_efficiency
+from src.metrics import HardwareMonitor, compute_all_metrics
+from src.schema import ProcessedData
 from src.utils import MODELS_DIR, ODS_ALL, PROCESSED_ML_DIR
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
-def train_xgboost():
+
+def train_xgboost(variant: str = "raw"):
     run = wandb.init(
         entity="TFG-66910",
         project="bopb-ods-multilabel",
         job_type="train",
-        name="xgboost-multilabel",
+        name=f"xgboost-{variant}",
         config={
+            "architecture": "XGBoost-OvR",
+            "variant": variant,
             "learning_rate": 0.3,
-            "architecture": "XGBoost",
-            "dataset": "train.parquet",
             "n_estimators": 100,
-            "tree_method": "gpu_hist",
+            "tree_method": "hist",  # CPU (no CUDA on MacBook Air)
+            "n_jobs": -1,
         },
     )
 
-    # Load data
     train_df = pd.read_parquet(f"{PROCESSED_ML_DIR}/split_train.parquet")
     test_df = pd.read_parquet(f"{PROCESSED_ML_DIR}/split_test.parquet")
 
-    X_train_text = train_df["text_ml"]
-    X_test_text = test_df["text_ml"]
-
-    y_train = train_df[ODS_ALL]
-    y_test = test_df[ODS_ALL]
-
-    # Load TF-IDF + MLB (ja entrenats)
     with open(os.path.join(PROCESSED_ML_DIR, "tfidf_model.pkl"), "rb") as f:
         tfidf = pickle.load(f)
 
-    # with open(os.path.join(PROCESSED_ML_DIR, "mlb.pkl"), "rb") as f:
-    #     mlb = pickle.load(f)
+    X_train = tfidf.transform(train_df[ProcessedData.TEXT_ML])
+    X_test = tfidf.transform(test_df[ProcessedData.TEXT_ML])
+    y_train = train_df[ODS_ALL]
+    y_test = test_df[ODS_ALL]
 
-    # Vectorització (IMPORTANT: només transform)
-    X_train = tfidf.transform(X_train_text)
-    X_test = tfidf.transform(X_test_text)
-
-    # (Opcional) assegurar format correcte de y
-    # y_train = mlb.transform(y_train)  # només si NO està ja binaritzat
-    # y_test = mlb.transform(y_test)
-
-    # Load Model
-    model = XGBClassifier(
-        tree_method="hist",
-        device="cuda",
-        predictor="gpu_predictor",
+    # MultiOutputClassifier trains one binary XGBClassifier per ODS label
+    base = XGBClassifier(
+        tree_method=run.config.tree_method,
         learning_rate=run.config.learning_rate,
         n_estimators=run.config.n_estimators,
-        callbacks=[wandb.xgboost.WandbCallback()],
+        n_jobs=run.config.n_jobs,
+        eval_metric="logloss",
+        verbosity=0,
     )
+    model = MultiOutputClassifier(base, n_jobs=1)  # parallelism handled inside XGB
 
-    # Train
-    start_t = time.time()
-    model.fit(X_train, y_train)
-    end_t = time.time()
+    monitor = HardwareMonitor().start()
+    model.fit(X_train, y_train.values)
+    monitor.stop("xgboost")
 
-    log_efficiency(start_t, end_t, "xgboost")
-
-    # Evaluate + log metrics
     preds = model.predict(X_test)
-    compute_all_metrics(y_test, preds, step_name="test")
+    compute_all_metrics(y_test.values, preds, step_name="test")
 
-    # Save model
-    joblib.dump(model, f"{MODELS_DIR}/xgboost_multilabel.pkl")
-
+    joblib.dump(model, f"{MODELS_DIR}/xgboost_{variant}.pkl")
     run.finish()
 
 
-def train_random_forest():
+def train_random_forest(variant: str = "balanced"):
     run = wandb.init(
         entity="TFG-66910",
         project="bopb-ods-multilabel",
         job_type="train",
-        name="random-forest-multilabel",
+        name=f"random-forest-{variant}",
         config={
+            "architecture": "RandomForest",
+            "variant": variant,
             "n_estimators": 300,
             "max_depth": None,
             "min_samples_split": 2,
             "min_samples_leaf": 1,
+            "class_weight": "balanced",
         },
     )
 
-    # Load data
     train_df = pd.read_parquet(f"{PROCESSED_ML_DIR}/split_train.parquet")
     test_df = pd.read_parquet(f"{PROCESSED_ML_DIR}/split_test.parquet")
 
-    X_train_text = train_df["text_ml"]
-    X_test_text = test_df["text_ml"]
-
-    y_train = train_df[ODS_ALL]
-    y_test = test_df[ODS_ALL]
-
-    # Load TF-IDF (IMPORTANT: no refit)
     with open(os.path.join(PROCESSED_ML_DIR, "tfidf_model.pkl"), "rb") as f:
         tfidf = pickle.load(f)
 
-    # Vectorització
-    X_train = tfidf.transform(X_train_text)
-    X_test = tfidf.transform(X_test_text)
+    X_train = tfidf.transform(train_df[ProcessedData.TEXT_ML])
+    X_test = tfidf.transform(test_df[ProcessedData.TEXT_ML])
+    y_train = train_df[ODS_ALL]
+    y_test = test_df[ODS_ALL]
 
-    # Model
+    # RandomForestClassifier handles multi-output natively;
+    # class_weight='balanced' is applied per output column.
     model = RandomForestClassifier(
         n_estimators=run.config.n_estimators,
         max_depth=run.config.max_depth,
         min_samples_split=run.config.min_samples_split,
         min_samples_leaf=run.config.min_samples_leaf,
-        n_jobs=-1,  # utilitza tots els cores CPU
-        verbose=1,
+        class_weight=run.config.class_weight,
+        n_jobs=-1,
+        verbose=0,
     )
 
-    # Training
-    start_t = time.time()
-    model.fit(X_train, y_train)
-    end_t = time.time()
+    monitor = HardwareMonitor().start()
+    model.fit(X_train, y_train.values)
+    monitor.stop("random_forest")
 
-    # Efficiency logging
-    log_efficiency(start_t, end_t, "random_forest")
-
-    # Evaluation
     preds = model.predict(X_test)
-    compute_all_metrics(y_test, preds, step_name="test")
+    compute_all_metrics(y_test.values, preds, step_name="test")
 
-    # Save model
-    joblib.dump(model, f"{MODELS_DIR}/random_forest_multilabel.pkl")
-
+    joblib.dump(model, f"{MODELS_DIR}/random_forest_{variant}.pkl")
     run.finish()
 
 
 if __name__ == "__main__":
-    # train_xgboost()
-    train_random_forest()
+    train_xgboost(variant="balanced")
+    # train_random_forest(variant="balanced")
