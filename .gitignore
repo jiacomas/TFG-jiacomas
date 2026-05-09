@@ -10,7 +10,7 @@ logs/
 
 # data
 /data/
-models/
+/models/
 
 # logs
 logs/

@@ -1,4 +1,3 @@
-# Development tools & Code quality
 # development tools & code quality
 pre-commit
 black
@@ -11,50 +10,27 @@ jupyterlab
 ipykernel
 
 # data i/o & processing
-pandas  # development tools & code quality
-pre-commit
-black
-ruff
-nbqa
-
-# Jupyter environment
-jupyterlab
-ipykernel
-ruff
-isort
-nbqa
-
-# jupyter environment
-jupyterlab
-ipykernel
-
-# Data I/O & Processing
 pandas>=2.0.0
-# data i/o & processing
-pandas
 numpy
 openpyxl
-pyarrow        # Critical for .parquet support
-fastparquet    # Alternative for .parquet
-scipy
-
-# NLP & Text Preprocessing
-spacy>=3.7.0
-# After installing, run: python -m spacy download ca_core_news_lg
-
-# Machine Learning — Classical models
-scikit-learn
 pyarrow
+fastparquet
 scipy
 
 # visualisation
 matplotlib
 seaborn
+wordcloud
+
+# NLP — text preprocessing
+spacy>=3.7.0
+# After installing, run: python -m spacy download ca_core_news_lg
+stanza
+nltk
 
 # machine learning — classical models
 scikit-learn
 iterative-stratification
-xgboost
 scikit-multilearn-ng
 xgboost
 
@@ -68,53 +44,7 @@ tokenizers
 datasets
 accelerate
 
-# NLP — text preprocessing
-spacy
-stanza
-nltk
-
-# Deep Learning & Transformers
-# experiment tracking & resource monitoring
-wandb
-psutil        # Required for the memory tracking in src/metrics.py
-joblib        # Required for saving/loading the .pkl models in ml_classic.py
-numpy
-openpyxl
-pyarrow
-scipy
-
-# visualisation
-matplotlib
-seaborn
-
-# machine learning — classical models
-scikit-learn
-iterative-stratification
-scikit-multilearn-ng
-xgboost
-
-# deep learning — CNN, LSTM
-torch
-transformers
-datasets
-accelerate
-
-# Experiment tracking & Utils
+# experiment tracking & utils
 wandb
 psutil
 joblib
-pytorch-lightning
-
-# transformers — BERT fine-tuning
-transformers
-tokenizers
-datasets
-accelerate
-
-# NLP — text preprocessing
-spacy
-stanza
-nltk
-
-# experiment tracking
-wandb
