@@ -180,7 +180,6 @@ def train_bert(
     log_environment()
 
     train_df = pd.read_parquet(f"{PROCESSED_DL_DIR}/split_train.parquet")
-    val_df = pd.read_parquet(f"{PROCESSED_DL_DIR}/split_val.parquet")
     test_df = pd.read_parquet(f"{PROCESSED_DL_DIR}/split_test.parquet")
 
     log_dataset_stats(
@@ -195,13 +194,6 @@ def train_bert(
         BopbDataset(train_df, tokenizer, max_len),
         batch_size=batch_size,
         shuffle=True,
-        num_workers=num_workers,
-        pin_memory=pin,
-    )
-    val_loader = DataLoader(
-        BopbDataset(val_df, tokenizer, max_len),
-        batch_size=batch_size,
-        shuffle=False,
         num_workers=num_workers,
         pin_memory=pin,
     )
@@ -241,8 +233,6 @@ def train_bert(
 
     train_mon = HardwareMonitor().start()
 
-    best_f1 = -1.0
-    best_state = None
     for epoch in range(1, epochs + 1):
         train_loss = _train_one_epoch(
             model,
@@ -252,34 +242,10 @@ def train_bert(
             loss_fn,
             DEVICE,
         )
-        val_loss, val_preds, val_targets, val_probs = _evaluate(
-            model,
-            val_loader,
-            loss_fn,
-            DEVICE,
-            threshold,
-        )
-        val_metrics = compute_all_metrics(
-            val_targets, val_preds, y_proba=val_probs, step_name="val"
-        )
-        wandb.log({"train/loss": train_loss, "val/loss": val_loss, "epoch": epoch})
-
-        f1_micro = val_metrics["val/f1_micro"]
-        print(
-            f"[bert-{variant}] epoch={epoch} "
-            f"train_loss={train_loss:.4f} val_loss={val_loss:.4f} "
-            f"f1_micro={f1_micro:.4f}"
-        )
-        if f1_micro > best_f1:
-            best_f1 = f1_micro
-            best_state = {
-                k: v.detach().cpu().clone() for k, v in model.state_dict().items()
-            }
+        wandb.log({"train/loss": train_loss, "epoch": epoch})
+        print(f"[bert-{variant}] epoch={epoch} train_loss={train_loss:.4f}")
 
     train_mon.stop("bert", phase="train")
-
-    if best_state is not None:
-        model.load_state_dict(best_state)
 
     infer_mon = HardwareMonitor().start()
     test_loss, test_preds, test_targets, test_probs = _evaluate(
@@ -291,7 +257,7 @@ def train_bert(
     )
     infer_mon.stop("bert", phase="inference")
 
-    wandb.log({"test/loss": test_loss, "best_val/f1_micro": best_f1})
+    wandb.log({"test/loss": test_loss})
     compute_all_metrics(test_targets, test_preds, y_proba=test_probs, step_name="test")
 
     save_path = f"{MODELS_DIR}/bert_{variant}.pt"
