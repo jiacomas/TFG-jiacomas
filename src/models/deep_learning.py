@@ -10,7 +10,13 @@ from torch.utils.data import DataLoader, Dataset
 from transformers import AutoModel, AutoTokenizer, get_linear_schedule_with_warmup
 
 import wandb
-from src.metrics import HardwareMonitor, compute_all_metrics
+from src.metrics import (
+    HardwareMonitor,
+    compute_all_metrics,
+    log_dataset_stats,
+    log_environment,
+    log_model_artifact,
+)
 from src.schema import ProcessedData
 from src.utils import MODELS_DIR, ODS_ALL, PROCESSED_DL_DIR, RANDOM_SEED
 
@@ -153,7 +159,7 @@ def train_bert(
 
     run = wandb.init(
         entity="TFG-66910",
-        project="bopb-ods-multilabel",
+        project="comparation-multilabel",
         job_type="train",
         name=f"bert-{variant}",
         config={
@@ -171,10 +177,16 @@ def train_bert(
             "device": str(DEVICE),
         },
     )
+    log_environment()
 
     train_df = pd.read_parquet(f"{PROCESSED_DL_DIR}/split_train.parquet")
     val_df = pd.read_parquet(f"{PROCESSED_DL_DIR}/split_val.parquet")
     test_df = pd.read_parquet(f"{PROCESSED_DL_DIR}/split_test.parquet")
+
+    log_dataset_stats(
+        train_df[ODS_ALL].values,
+        test_df[ODS_ALL].values,
+    )
 
     tokenizer = AutoTokenizer.from_pretrained(base_model_name)
 
@@ -206,6 +218,14 @@ def train_bert(
         num_labels=len(ODS_ALL),
         dropout=dropout,
     ).to(DEVICE)
+    n_params = sum(p.numel() for p in model.parameters())
+    n_trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    wandb.log(
+        {
+            "model/bert/n_params": n_params,
+            "model/bert/n_trainable_params": n_trainable,
+        }
+    )
     loss_fn = nn.BCEWithLogitsLoss()
     optimizer = AdamW(
         model.parameters(),
@@ -219,7 +239,7 @@ def train_bert(
         num_training_steps=total_steps,
     )
 
-    monitor = HardwareMonitor().start()
+    train_mon = HardwareMonitor().start()
 
     best_f1 = -1.0
     best_state = None
@@ -232,14 +252,16 @@ def train_bert(
             loss_fn,
             DEVICE,
         )
-        val_loss, val_preds, val_targets, _ = _evaluate(
+        val_loss, val_preds, val_targets, val_probs = _evaluate(
             model,
             val_loader,
             loss_fn,
             DEVICE,
             threshold,
         )
-        val_metrics = compute_all_metrics(val_targets, val_preds, step_name="val")
+        val_metrics = compute_all_metrics(
+            val_targets, val_preds, y_proba=val_probs, step_name="val"
+        )
         wandb.log({"train/loss": train_loss, "val/loss": val_loss, "epoch": epoch})
 
         f1_micro = val_metrics["val/f1_micro"]
@@ -254,22 +276,23 @@ def train_bert(
                 k: v.detach().cpu().clone() for k, v in model.state_dict().items()
             }
 
-    monitor.stop("bert")
+    train_mon.stop("bert", phase="train")
 
     if best_state is not None:
         model.load_state_dict(best_state)
 
-    test_loss, test_preds, _, _ = _evaluate(
+    infer_mon = HardwareMonitor().start()
+    test_loss, test_preds, test_targets, test_probs = _evaluate(
         model,
         test_loader,
         loss_fn,
         DEVICE,
         threshold,
     )
-    wandb.log({"test/loss": test_loss, "best_val/f1_micro": best_f1})
+    infer_mon.stop("bert", phase="inference")
 
-    y_test = test_df[ODS_ALL].values
-    compute_all_metrics(y_test, test_preds, step_name="test")
+    wandb.log({"test/loss": test_loss, "best_val/f1_micro": best_f1})
+    compute_all_metrics(test_targets, test_preds, y_proba=test_probs, step_name="test")
 
     save_path = f"{MODELS_DIR}/bert_{variant}.pt"
     torch.save(
@@ -279,6 +302,9 @@ def train_bert(
             "labels": ODS_ALL,
         },
         save_path,
+    )
+    log_model_artifact(
+        save_path, "bert", n_params=n_params, n_trainable_params=n_trainable
     )
     run.finish()
 
