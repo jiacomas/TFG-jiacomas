@@ -189,8 +189,14 @@ def train_bert(
     num_workers: int = 2,
     pos_weight_cap: float = 20.0,
     monitor_metric: str = "val/f1_macro",
+    family: str = "bert",
+    architecture: str = "BERT-multilabel",
 ):
     """Fine-tune a BERT-style encoder on the BOPB-ODS multilabel task.
+
+    `family` namespaces filenames, W&B run name, hardware monitor labels and
+    metric prefixes so multiple encoder families (BERTa, mmBERT, …) can share
+    this trainer while keeping their results clearly separated in the dashboard.
 
     Improvements over v1 (`bert_berta`):
       * uses `split_val.parquet` for early stopping + threshold tuning
@@ -205,9 +211,10 @@ def train_bert(
         entity="TFG-66910",
         project="comparation-multilabel",
         job_type="train",
-        name=f"bert-{variant}",
+        name=f"{family}-{variant}",
         config={
-            "architecture": "BERT-multilabel",
+            "architecture": architecture,
+            "family": family,
             "variant": variant,
             "base_model": base_model_name,
             "max_len": max_len,
@@ -269,8 +276,8 @@ def train_bert(
     n_trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
     wandb.log(
         {
-            "model/bert/n_params": n_params,
-            "model/bert/n_trainable_params": n_trainable,
+            f"model/{family}/n_params": n_params,
+            f"model/{family}/n_trainable_params": n_trainable,
         }
     )
 
@@ -330,7 +337,7 @@ def train_bert(
             }
         )
         print(
-            f"[bert-{variant}] epoch={epoch} "
+            f"[{family}-{variant}] epoch={epoch} "
             f"train_loss={train_loss:.4f} val_loss={val_loss:.4f} "
             f"val_f1_macro={val_f1_macro:.4f} val_f1_micro={val_f1_micro:.4f}"
         )
@@ -345,12 +352,12 @@ def train_bert(
             epochs_since_improve += 1
             if epochs_since_improve >= patience:
                 print(
-                    f"[bert-{variant}] early stop at epoch {epoch} "
+                    f"[{family}-{variant}] early stop at epoch {epoch} "
                     f"(best epoch={best_epoch}, best {monitor_metric}={best_score:.4f})"
                 )
                 break
 
-    train_mon.stop("bert", phase="train")
+    train_mon.stop(family, phase="train")
 
     if best_state is not None:
         model.load_state_dict(best_state)
@@ -371,7 +378,7 @@ def train_bert(
     test_loss, test_probs, test_targets = _forward_split(
         model, test_loader, loss_fn, DEVICE
     )
-    infer_mon.stop("bert", phase="inference")
+    infer_mon.stop(family, phase="inference")
 
     test_preds_default = (test_probs >= threshold).astype(int)
     test_preds_tuned = (test_probs >= tuned_thresholds).astype(int)
@@ -384,7 +391,7 @@ def train_bert(
         test_targets, test_preds_tuned, y_proba=test_probs, step_name="test_tuned"
     )
 
-    save_path = f"{MODELS_DIR}/bert_{variant}.pt"
+    save_path = f"{MODELS_DIR}/{family}_{variant}.pt"
     torch.save(
         {
             "state_dict": model.state_dict(),
@@ -397,10 +404,32 @@ def train_bert(
         save_path,
     )
     log_model_artifact(
-        save_path, "bert", n_params=n_params, n_trainable_params=n_trainable
+        save_path, family, n_params=n_params, n_trainable_params=n_trainable
     )
     run.finish()
 
 
+def train_mmbert(
+    variant: str = "base",
+    base_model_name: str = "jhu-clsp/mmBERT-base",
+    **kwargs,
+):
+    """Fine-tune mmBERT (multilingual ModernBERT, jhu-clsp) on BOPB-ODS.
+
+    Delegates to `train_bert` with the same training recipe (max_len, batch,
+    epochs, pos_weight BCE, per-class threshold tuning, early stopping) so the
+    resulting metrics share scale and methodology with the BERTa baseline and
+    the classical ML models. Any keyword overrides flow through `**kwargs`.
+    """
+    return train_bert(
+        variant=variant,
+        base_model_name=base_model_name,
+        family="mmbert",
+        architecture="mmBERT-multilabel",
+        **kwargs,
+    )
+
+
 if __name__ == "__main__":
-    train_bert(variant="berta_v2")
+    # train_bert(variant="berta_v2")
+    train_mmbert(variant="base")
