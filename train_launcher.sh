@@ -34,7 +34,7 @@ echo "Using Python: $(which python)"
 nvidia-smi
 
 # Run the training script
-python3 src/models/ml_classic.py
-# python3 src/models/deep_learning.py
+# python3 src/models/ml_classic.py
+python3 src/models/deep_learning.py
 
 echo "Job finished at $(date)"
