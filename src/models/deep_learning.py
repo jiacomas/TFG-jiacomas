@@ -37,62 +37,28 @@ DEVICE = _resolve_device()
 
 
 class BopbDataset(Dataset):
-    """BOPB announcements for a HuggingFace encoder.
+    """Tokenises BOPB announcements on-the-fly for a HuggingFace encoder.
 
-    Two construction modes:
-      * `__init__(df, tokenizer, max_len, ...)` — tokenise on-the-fly from a parquet split
-        (`ProcessedData.TEXT_DL` plus the 17 ODS columns).
-      * `BopbDataset.from_pretokenized(path)` — load a pre-tokenised `.pt` produced by
-        notebook 03 (keys: `input_ids`, `attention_mask`, `targets`). Skips per-epoch
-        tokenisation entirely — faster, but the file must have been generated with the
-        same checkpoint as the model being trained.
+    Expects a parquet split with `ProcessedData.TEXT_DL` plus the 17 ODS columns.
     """
 
     def __init__(
         self,
-        df: pd.DataFrame | None = None,
-        tokenizer=None,
-        max_len: int | None = None,
+        df: pd.DataFrame,
+        tokenizer,
+        max_len: int,
         target_cols: list = ODS_ALL,
         text_col: str = ProcessedData.TEXT_DL,
-        *,
-        input_ids: torch.Tensor | None = None,
-        attention_mask: torch.Tensor | None = None,
-        targets: torch.Tensor | None = None,
     ):
-        if input_ids is not None:
-            self.mode = "pretokenized"
-            self.input_ids = input_ids
-            self.attention_mask = attention_mask
-            self.targets = targets.to(torch.float32)
-        else:
-            self.mode = "on_the_fly"
-            self.texts = df[text_col].astype(str).tolist()
-            self.targets = df[target_cols].values.astype(np.float32)
-            self.tokenizer = tokenizer
-            self.max_len = max_len
-
-    @classmethod
-    def from_pretokenized(cls, path: str) -> "BopbDataset":
-        payload = torch.load(path, map_location="cpu", weights_only=True)
-        return cls(
-            input_ids=payload["input_ids"],
-            attention_mask=payload["attention_mask"],
-            targets=payload["targets"],
-        )
+        self.texts = df[text_col].astype(str).tolist()
+        self.targets = df[target_cols].values.astype(np.float32)
+        self.tokenizer = tokenizer
+        self.max_len = max_len
 
     def __len__(self) -> int:
-        if self.mode == "pretokenized":
-            return self.input_ids.shape[0]
         return len(self.texts)
 
     def __getitem__(self, idx: int) -> dict:
-        if self.mode == "pretokenized":
-            return {
-                "input_ids": self.input_ids[idx],
-                "attention_mask": self.attention_mask[idx],
-                "targets": self.targets[idx],
-            }
         text = " ".join(self.texts[idx].split())
         enc = self.tokenizer(
             text,
@@ -225,7 +191,6 @@ def train_bert(
     monitor_metric: str = "val/f1_macro",
     family: str = "bert",
     architecture: str = "BERT-multilabel",
-    use_pretokenized: bool = False,
 ):
     """Fine-tune a BERT-style encoder on the BOPB-ODS multilabel task.
 
@@ -264,54 +229,38 @@ def train_bert(
             "pos_weight_cap": pos_weight_cap,
             "monitor_metric": monitor_metric,
             "device": str(DEVICE),
-            "use_pretokenized": use_pretokenized,
         },
     )
     log_environment()
 
+    train_df = pd.read_parquet(f"{PROCESSED_DL_DIR}/split_train.parquet")
+    val_df = pd.read_parquet(f"{PROCESSED_DL_DIR}/split_val.parquet")
+    test_df = pd.read_parquet(f"{PROCESSED_DL_DIR}/split_test.parquet")
+
+    log_dataset_stats(
+        train_df[ODS_ALL].values,
+        test_df[ODS_ALL].values,
+    )
+
+    tokenizer = AutoTokenizer.from_pretrained(base_model_name)
+
     pin = DEVICE.type == "cuda"
-
-    if use_pretokenized:
-        train_ds = BopbDataset.from_pretokenized(
-            f"{PROCESSED_DL_DIR}/tokens_{family}_train.pt"
-        )
-        val_ds = BopbDataset.from_pretokenized(
-            f"{PROCESSED_DL_DIR}/tokens_{family}_val.pt"
-        )
-        test_ds = BopbDataset.from_pretokenized(
-            f"{PROCESSED_DL_DIR}/tokens_{family}_test.pt"
-        )
-        Y_train_np = train_ds.targets.numpy().astype(np.int64)
-        Y_test_np = test_ds.targets.numpy().astype(np.int64)
-    else:
-        train_df = pd.read_parquet(f"{PROCESSED_DL_DIR}/split_train.parquet")
-        val_df = pd.read_parquet(f"{PROCESSED_DL_DIR}/split_val.parquet")
-        test_df = pd.read_parquet(f"{PROCESSED_DL_DIR}/split_test.parquet")
-        tokenizer = AutoTokenizer.from_pretrained(base_model_name)
-        train_ds = BopbDataset(train_df, tokenizer, max_len)
-        val_ds = BopbDataset(val_df, tokenizer, max_len)
-        test_ds = BopbDataset(test_df, tokenizer, max_len)
-        Y_train_np = train_df[ODS_ALL].values
-        Y_test_np = test_df[ODS_ALL].values
-
-    log_dataset_stats(Y_train_np, Y_test_np)
-
     train_loader = DataLoader(
-        train_ds,
+        BopbDataset(train_df, tokenizer, max_len),
         batch_size=batch_size,
         shuffle=True,
         num_workers=num_workers,
         pin_memory=pin,
     )
     val_loader = DataLoader(
-        val_ds,
+        BopbDataset(val_df, tokenizer, max_len),
         batch_size=batch_size,
         shuffle=False,
         num_workers=num_workers,
         pin_memory=pin,
     )
     test_loader = DataLoader(
-        test_ds,
+        BopbDataset(test_df, tokenizer, max_len),
         batch_size=batch_size,
         shuffle=False,
         num_workers=num_workers,
@@ -333,7 +282,7 @@ def train_bert(
     )
 
     pos_weight = _compute_pos_weight(
-        Y_train_np.astype(np.float32),
+        train_df[ODS_ALL].values.astype(np.float32),
         cap=pos_weight_cap,
     ).to(DEVICE)
     wandb.log(
