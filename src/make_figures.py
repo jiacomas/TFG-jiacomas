@@ -115,15 +115,15 @@ def fig_f1_per_ods(models, out_dir):
 
 
 def fig_threshold_tuning(thr_model, out_dir):
-    """thr_model: dict amb keys
+    """thr_model: dict with keys
     name, color, thresholds (dict 'ODS N'->val),
-    f1_default, f1_tuned, paired (llista de (name, color, def, tuned)).
+    f1_default, f1_tuned, paired (list of (name, color, def, tuned)).
     """
     print("Generating threshold_tuning_diagram.png ...")
 
     fig, axes = plt.subplots(1, 3, figsize=(13, 4.5))
 
-    # (A) Pipeline d'entrenament
+    # (A) Training pipeline
     ax = axes[0]
     ax.set_xlim(0, 10)
     ax.set_ylim(0, 10)
@@ -222,7 +222,7 @@ def fig_threshold_tuning(thr_model, out_dir):
         )
         ax.axis("off")
 
-    # (C) Guany F1-macro
+    # (C) F1-macro gain
     ax = axes[2]
     ax.set_title(
         "(C) F1-macro gain per threshold tuning", fontsize=11, fontweight="bold", pad=8
@@ -365,7 +365,7 @@ def _fig_threshold_per_ods_single(thr_model, out_dir, filename):
     ax.set_yticklabels(ods_names, fontsize=9)
     ax.invert_yaxis()
     ax.set_xlim(0, 1.18)
-    ax.set_xlabel("Llindar òptim", fontsize=10)
+    ax.set_xlabel("Optimal threshold", fontsize=10)
     ax.xaxis.grid(True, linestyle="--", alpha=0.35, zorder=0)
     ax.spines[["top", "right"]].set_visible(False)
 
@@ -382,7 +382,7 @@ def _fig_threshold_per_ods_single(thr_model, out_dir, filename):
     max_i = int(np.argmax(vals))
     min_i = int(np.argmin(vals))
     ax.annotate(
-        "més conservador",
+        "more conservative",
         xy=(vals[max_i], y_pos[max_i]),
         xytext=(vals[max_i] + 0.04, y_pos[max_i] - 0.6),
         fontsize=8,
@@ -393,7 +393,7 @@ def _fig_threshold_per_ods_single(thr_model, out_dir, filename):
         arrowprops=dict(arrowstyle="-", color=C_CONSERVATIVE, lw=0.8),
     )
     ax.annotate(
-        "més permissiu",
+        "more permissive",
         xy=(vals[min_i], y_pos[min_i]),
         xytext=(vals[min_i] + 0.18, y_pos[min_i] + 0.6),
         fontsize=8,
@@ -405,16 +405,16 @@ def _fig_threshold_per_ods_single(thr_model, out_dir, filename):
     )
 
     legend_handles = [
-        mpatches.Patch(color=C_PERMISSIVE, label="Permissiu (<0,5)"),
-        mpatches.Patch(color=C_BALANCED, label="Equilibrat (0,5–0,75)"),
-        mpatches.Patch(color=C_CONSERVATIVE, label="Conservador (≥0,75)"),
+        mpatches.Patch(color=C_PERMISSIVE, label="Permissive (<0.5)"),
+        mpatches.Patch(color=C_BALANCED, label="Balanced (0.5–0.75)"),
+        mpatches.Patch(color=C_CONSERVATIVE, label="Conservative (≥0.75)"),
         plt.Line2D(
             [0],
             [0],
             color="#333",
             linestyle="--",
             lw=1.3,
-            label="Llindar defecte (0,5)",
+            label="Default threshold (0.5)",
         ),
     ]
     ax.legend(handles=legend_handles, fontsize=8, loc="lower right", framealpha=0.9)
@@ -480,16 +480,16 @@ def _fig_threshold_per_ods_multi(thr_models, out_dir, filename):
     ax.set_yticklabels(ods_names, fontsize=9)
     ax.invert_yaxis()
     ax.set_xlim(0, 1.18)
-    ax.set_xlabel("Llindar òptim", fontsize=10)
+    ax.set_xlabel("Optimal threshold", fontsize=10)
     ax.xaxis.grid(True, linestyle="--", alpha=0.35, zorder=0)
     ax.spines[["top", "right"]].set_visible(False)
 
     # Zone labels, above the first row (y-axis inverted)
     y_top = ax.get_ylim()[1]  # minimum value of y after inversion
     for x_pos, txt, col in [
-        (0.25, "permissiu", "#2d6a4f"),
-        (0.625, "equilibrat", "#666"),
-        (0.90, "conservador", "#9c2b2b"),
+        (0.25, "permissive", "#2d6a4f"),
+        (0.625, "balanced", "#666"),
+        (0.90, "conservative", "#9c2b2b"),
     ]:
         ax.text(
             x_pos,
@@ -514,7 +514,7 @@ def _fig_threshold_per_ods_multi(thr_models, out_dir, filename):
             color="#333",
             linestyle="--",
             lw=1.2,
-            label="Llindar defecte (0,5)",
+            label="Default threshold (0.5)",
         )
     ]
     ax.legend(handles=legend_handles, fontsize=8.5, loc="lower right", framealpha=0.9)
@@ -658,18 +658,18 @@ def main(figures: list[int] = [1, 2, 3, 4, 5]):
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    ap.add_argument("--rf", help="JSON summary del Random Forest")
-    ap.add_argument("--xgb", help="JSON summary del XGBoost")
-    ap.add_argument("--berta", help="JSON summary de BERTa")
-    ap.add_argument("--mmbert", help="JSON summary de mmBERT")
+    ap.add_argument("--rf", help="JSON summary for Random Forest")
+    ap.add_argument("--xgb", help="JSON summary for XGBoost")
+    ap.add_argument("--berta", help="JSON summary for BERTa")
+    ap.add_argument("--mmbert", help="JSON summary for mmBERT")
     ap.add_argument(
-        "--out", default="figures/results", help="Directori on desar les figures"
+        "--out", default="figures/results", help="Directory to save the figures"
     )
     ap.add_argument(
         "--threshold-model",
         default="berta",
         choices=["berta", "mmbert"],
-        help="Model del qual mostrar els llindars al panell (B)",
+        help="Model whose thresholds are shown in panel (B)",
     )
     args = ap.parse_args()
 
@@ -717,9 +717,9 @@ def main(figures: list[int] = [1, 2, 3, 4, 5]):
                 args.out,
             )
         else:
-            print("  · threshold_tuning_diagram.png: any model with tuning, omitting.")
+            print("  · threshold_tuning_diagram.png: no model with tuning, skipping.")
 
-    # Fig 5: thresholds for ODS — single model or comparison BERTa vs mmBERT
+    # Fig 5: thresholds per ODS — single model or BERTa vs mmBERT comparison
     if 5 in figures:
         thr_payload = [
             {"name": m["name"], "color": m["color"], "thresholds": m["thresholds"]}
@@ -729,9 +729,9 @@ def main(figures: list[int] = [1, 2, 3, 4, 5]):
         if thr_payload:
             fig_threshold_per_ods(thr_payload, args.out)
         else:
-            print("  · threshold_per_ods.png: no model with thresholds, omitting.")
+            print("  · threshold_per_ods.png: no model with thresholds, skipping.")
 
-    # Fig 3: ROC-AUC i AP
+    # Fig 3: ROC-AUC and AP
     if 3 in figures:
         fig_roc_auc(
             [
