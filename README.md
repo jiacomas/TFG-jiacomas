@@ -31,19 +31,21 @@ Com que un sol anunci pot associar-se a diversos ODS simultàniament, el problem
 │
 ├── notebooks/
 │   ├── 01_data_preparation.ipynb   ← integració, neteja i splits
-│   └── 02_eda.ipynb                ← anàlisi exploratòria de dades
+│   ├── 02_eda.ipynb                ← anàlisi exploratòria de dades
+│   └── 03_modelling.ipynb          ← normalització ML, TF-IDF i splits
 │
 ├── src/
+│   ├── make_figures.py             ← genera gràfics finals a partir dels JSON de results/
 │   ├── metrics.py                  ← Hamming Loss, F1, Jaccard, etc.
 │   ├── schema.py                   ← constants de columnes
 │   ├── utils.py                    ← paths i configuració global
 │   └── models/
-│       ├── ml_classic.py
-│       └── deep_learning.py # TODO
+│       ├── ml_classic.py           ← Random Forest i XGBoost
+│       └── deep_learning.py        ← BERTa i mmBERT
 │
 ├── figures/                        ← gràfics generats per EDA i resultats
 ├── models/                         ← models entrenats guardats (.pkl, .pt)
-├── results/                        ← mètriques i comparatives (.csv)
+├── results/                        ← summaries de W&B per model (.json)
 │
 ├── .gitignore
 ├── .pre-commit-config.yaml
@@ -94,9 +96,9 @@ brew install libomp
 
 ### 4. Instal·la les dependències de Python
 
-Instal·lació en un sol pas (via Makefile):
 ```bash
-make install
+pip install -r requirements.txt
+pre-commit install
 ```
 
 ## Ús
@@ -107,21 +109,32 @@ Executa els notebooks en ordre seqüencial des de JupyterLab:
 jupyter lab
 ```
 
-| Notebook              | Descripció                                        | Output principal                    |
-| --------------------- | ------------------------------------------------- | ----------------------------------- |
-| `01_data_preparation` | Integració XLSX + CSV, neteja, splits             | `data/processed/`                   |
-| `02_eda`              | Distribució ODS, co-ocurrències, longitud de text | `figures/eda`                       |
+| Notebook              | Descripció                                          | Output principal     |
+| --------------------- | --------------------------------------------------- | -------------------- |
+| `01_data_preparation` | Integració XLSX + CSV, neteja, splits               | `data/processed/`    |
+| `02_eda`              | Distribució ODS, co-ocurrències, longitud de text   | `figures/eda`        |
+| `03_modelling`        | Normalització ML, TF-IDF, splits estratificats      | `data/processed/`    |
 
-> ⚠️ El conjunt de test (`data/processed/split_test.parquet`) **no s'avalua fins al final**, un cop la selecció de models entre els notebooks 03–05 és definitiva.
+Entrenament dels models (des de l'arrel del projecte):
+
+```bash
+python -m src.models.ml_classic       # Random Forest + XGBoost
+python -m src.models.deep_learning    # BERTa + mmBERT
+python src/make_figures.py \
+    --rf results/rf_summary.json --xgb results/xgb_summary.json \
+    --berta results/berta_summary.json --mmbert results/mmbert_summary.json
+```
+
+> ⚠️ El conjunt de test (`data/processed/split_test.parquet`) **no s'avalua fins al final**, un cop la selecció de models és definitiva.
 
 ## Seguiment d'experiments
 
-Tots els experiments es registren a [Weights & Biases](https://wandb.ai) sota el projecte `bopb-ods-multilabel`. Cada notebook correspon a un run independent:
+Tots els experiments es registren a [Weights & Biases](https://wandb.ai) sota el projecte `comparation-multilabel`. Cada notebook correspon a un run independent:
 
 | Run W&B            |  Models                 |
 | ------------------ | ------------------------|
 | `ml_classic.py`    | Random forest & XGBoost |
-| `deep_learning`    | BERTa x BiLSTM          |
+| `deep_learning.py` | BERTa & mmBERT          |
 
 Per accedir al dashboard:
 

@@ -1,6 +1,4 @@
 import copy
-import sys
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -21,8 +19,6 @@ from src.metrics import (
 )
 from src.schema import ProcessedData
 from src.utils import MODELS_DIR, ODS_ALL, PROCESSED_DL_DIR, RANDOM_SEED
-
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 
 def _resolve_device() -> torch.device:
@@ -77,7 +73,7 @@ class BopbDataset(Dataset):
 
 
 class BertMultilabel(nn.Module):
-    """BERT/RoBERTa backbone + dropout + linear head with sigmoid via BCEWithLogitsLoss."""
+    """BERT/RoBERTa backbone + dropout + linear head (sigmoid via BCEWithLogits)."""
 
     def __init__(self, base_model_name: str, num_labels: int, dropout: float = 0.3):
         super().__init__()
