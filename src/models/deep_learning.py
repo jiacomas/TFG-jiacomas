@@ -402,3 +402,7 @@ if __name__ == "__main__":
     # --- Baseline experiments (max_len=256) ---
     # train_bert(variant="berta_v2")
     train_mmbert(variant="base")
+
+    # --- Experiment: longer context (max_len=512) ---
+    # train_bert(variant="berta_v2_len512", max_len=512, batch_size=8)
+    # train_mmbert(variant="base_len512", max_len=512, batch_size=8)
