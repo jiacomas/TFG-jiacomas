@@ -16,6 +16,7 @@ from src.metrics import (
     log_dataset_stats,
     log_environment,
     log_model_artifact,
+    tune_thresholds,
 )
 from src.schema import ProcessedData
 from src.utils import MODELS_DIR, ODS_ALL, PROCESSED_DL_DIR, RANDOM_SEED
@@ -139,35 +140,6 @@ def _forward_split(model, loader, loss_fn, device):
     probs = torch.sigmoid(torch.cat(logits_all)).numpy()
     targets = torch.cat(targets_all).numpy().astype(int)
     return float(np.mean(losses)), probs, targets
-
-
-def _tune_thresholds(
-    probs: np.ndarray,
-    targets: np.ndarray,
-    grid: np.ndarray | None = None,
-    default: float = 0.5,
-) -> np.ndarray:
-    """Per-class threshold that maximises F1 on a held-out split.
-
-    Falls back to `default` for labels with zero positives (grid search degenerate).
-    """
-    if grid is None:
-        grid = np.arange(0.05, 0.95 + 1e-9, 0.05)
-    n_labels = probs.shape[1]
-    best = np.full(n_labels, default, dtype=np.float32)
-    for j in range(n_labels):
-        y_j = targets[:, j]
-        if y_j.sum() == 0:
-            continue
-        p_j = probs[:, j]
-        best_f1, best_t = -1.0, default
-        for t in grid:
-            pred = (p_j >= t).astype(int)
-            f1 = f1_score(y_j, pred, zero_division=0)
-            if f1 > best_f1:
-                best_f1, best_t = f1, float(t)
-        best[j] = best_t
-    return best
 
 
 def train_bert(
@@ -365,7 +337,7 @@ def train_bert(
     )
 
     _, val_probs, val_targets = _forward_split(model, val_loader, loss_fn, DEVICE)
-    tuned_thresholds = _tune_thresholds(val_probs, val_targets, default=threshold)
+    tuned_thresholds = tune_thresholds(val_probs, val_targets, default=threshold)
     wandb.log(
         {f"threshold/{lbl}": float(t) for lbl, t in zip(ODS_ALL, tuned_thresholds)}
     )
@@ -427,5 +399,6 @@ def train_mmbert(
 
 
 if __name__ == "__main__":
+    # --- Baseline experiments (max_len=256) ---
     # train_bert(variant="berta_v2")
     train_mmbert(variant="base")

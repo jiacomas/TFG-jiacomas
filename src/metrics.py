@@ -196,6 +196,40 @@ def compute_all_metrics(
     return metrics
 
 
+def tune_thresholds(
+    probs,
+    targets,
+    grid: np.ndarray | None = None,
+    default: float = 0.5,
+) -> np.ndarray:
+    """Per-class decision threshold that maximises F1 on a held-out split.
+
+    Shared by the classical-ML and deep-learning trainers so both families
+    pick their operating point with the exact same procedure: for each label
+    the threshold in `grid` giving the best F1 on the validation split is kept.
+    Labels with zero positives (grid search degenerate) fall back to `default`.
+    """
+    probs = np.asarray(probs)
+    targets = np.asarray(targets)
+    if grid is None:
+        grid = np.arange(0.05, 0.95 + 1e-9, 0.05)
+    n_labels = probs.shape[1]
+    best = np.full(n_labels, default, dtype=np.float32)
+    for j in range(n_labels):
+        y_j = targets[:, j]
+        if y_j.sum() == 0:
+            continue
+        p_j = probs[:, j]
+        best_f1, best_t = -1.0, default
+        for t in grid:
+            pred = (p_j >= t).astype(int)
+            f1 = f1_score(y_j, pred, zero_division=0)
+            if f1 > best_f1:
+                best_f1, best_t = f1, float(t)
+        best[j] = best_t
+    return best
+
+
 class HardwareMonitor:
     """Samples CPU%, RSS and (if torch is available) GPU memory in a thread."""
 
