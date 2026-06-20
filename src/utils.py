@@ -16,6 +16,7 @@ PROCESSED_DL_DIR = f"{OUTPUT_DIR}/dl"
 
 OUTPUT_DIR_EDA = f"{PROJECT_ROOT}/figures/eda"
 MODELS_DIR = f"{PROJECT_ROOT}/models"
+RESULTS_DIR = f"{PROJECT_ROOT}/result"
 
 # --- Configuració general ---
 RANDOM_SEED = 42
