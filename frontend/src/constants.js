@@ -104,6 +104,77 @@ export const MODEL_INFO = {
 
 export const MODEL_ORDER = ['rf', 'xgb', 'berta', 'mmbert'];
 
+export const ODS_DETAILS = [
+  {
+    desc: "Posar fi a la pobresa en totes les seves formes arreu del món. Cal garantir sistemes de protecció social, accés igualitari als recursos econòmics i resiliència davant els riscos i desastres. L'any 2015, 736 milions de persones vivien amb menys d'1,90 dòlars al dia.",
+    keywords: ['pobresa extrema', 'protecció social', 'vulnerabilitat', 'resiliència', 'drets econòmics'],
+  },
+  {
+    desc: "Posar fi a la gana, aconseguir la seguretat alimentària, millorar la nutrició i promoure l'agricultura sostenible. Cal duplicar la productivitat agrícola i garantir sistemes alimentaris sostenibles per a tota la població, especialment els grups vulnerables i les poblacions rurals.",
+    keywords: ['alimentació', 'agricultura', 'nutrició', 'biodiversitat', 'seguretat alimentària'],
+  },
+  {
+    desc: "Garantir una vida sana i promoure el benestar per a totes les persones de totes les edats. Inclou la reducció de la mortalitat materna i infantil, el fi de les epidèmies de SIDA, tuberculosi i malària, i l'assoliment de la cobertura sanitària universal.",
+    keywords: ['salut', 'malalties', 'mortalitat', 'cobertura sanitària', 'benestar mental'],
+  },
+  {
+    desc: "Garantir una educació inclusiva, equitativa i de qualitat i promoure oportunitats d'aprenentatge permanent per a tothom. L'accés universal a l'educació bàsica, la formació tècnica i professional i l'ensenyament superior equitatiu son pilars fonamentals del desenvolupament.",
+    keywords: ['escoles', 'ensenyament', 'formació professional', 'inclusió', 'alfabetització'],
+  },
+  {
+    desc: "Assolir la igualtat entre els gèneres i apoderar totes les dones i les nenes. Inclou l'eliminació de la discriminació, la violència i les pràctiques perjudicials, l'accés igualitari als recursos econòmics i la plena participació en la vida política i pública.",
+    keywords: ['igualtat gènere', 'dones', 'discriminació', 'violència', 'apoderament'],
+  },
+  {
+    desc: "Garantir la disponibilitat i la gestió sostenible de l'aigua i el sanejament per a tothom. L'accés a l'aigua potable, el tractament d'aigües residuals, la gestió integrada dels recursos hídrics i la protecció dels ecosistemes aquàtics son prioritats clau.",
+    keywords: ['aigua potable', 'sanejament', 'higiene', 'gestió hídrica', 'ecosistemes aquàtics'],
+  },
+  {
+    desc: "Garantir l'accés a una energia assequible, fiable, sostenible i moderna per a tothom. L'increment de les energies renovables, la millora de l'eficiència energètica i l'expansió de la infraestructura d'energia neta son objectius centrals per al 2030.",
+    keywords: ['energies renovables', 'eficiència energètica', 'accés energia', 'solar', 'eòlica'],
+  },
+  {
+    desc: "Promoure el creixement econòmic sostingut, inclusiu i sostenible, el ple ocupació productiva i el treball digne per a tothom. Inclou la reducció de la desocupació juvenil, l'erradicació del treball forçós i el foment de l'emprenedoria i la innovació.",
+    keywords: ['ocupació', 'creixement econòmic', 'treball digne', 'emprenedoria', 'productivitat'],
+  },
+  {
+    desc: "Construir infraestructures resilients, promoure la industrialització inclusiva i sostenible i fomentar la innovació. L'accés universal a les TIC, la inversió en recerca i desenvolupament tecnològic, i la construcció d'infraestructures de qualitat impulsen el progrés.",
+    keywords: ['infraestructures', 'innovació', 'industria', 'tecnologia', 'investigació'],
+  },
+  {
+    desc: "Reduir la desigualtat en i entre els països. Inclou la reducció de la desigualtat d'ingressos, la facilitació de la migració segura, la millora de la representació dels països en vies de desenvolupament i la regulació justa dels mercats financers globals.",
+    keywords: ['desigualtat', 'inclusió', 'migració', 'redistribució', 'discriminació'],
+  },
+  {
+    desc: "Aconseguir que les ciutats i els assentaments humans siguin inclusius, segurs, resilients i sostenibles. Inclou l'accés a l'habitatge assequible, el transport sostenible, la planificació urbana participativa i la protecció del patrimoni cultural i natural.",
+    keywords: ['habitatge', 'urbanisme', 'transport', 'planificació urbana', 'resiliència urbana'],
+  },
+  {
+    desc: "Garantir modalitats de consum i producció sostenibles. La gestió eficient dels recursos naturals, la reducció de residus alimentaris, la informació als consumidors sobre el consum sostenible i la promoció de la contractació pública sostenible son metes centrals.",
+    keywords: ['residus', 'consum responsable', 'producció sostenible', 'reciclatge', 'eficiència'],
+  },
+  {
+    desc: "Adoptar mesures urgents per combatre el canvi climàtic i els seus efectes devastadors. Inclou la incorporació de mesures de mitigació als plans nacionals, l'educació climàtica i la construcció de capacitats per a la planificació climàtica als països en vies de desenvolupament.",
+    keywords: ['canvi climàtic', 'emissions CO2', 'mitigació', 'adaptació', 'resiliència climàtica'],
+  },
+  {
+    desc: "Conservar i utilitzar de manera sostenible els oceans, mars i recursos marins per al desenvolupament sostenible. La reducció de la contaminació marina, la gestió sostenible de la pesca, la protecció dels ecosistemes costaners i la recerca oceànica son prioritats urgents.",
+    keywords: ['oceans', 'pesca sostenible', 'contaminació marina', 'ecosistemes marins', 'acidificació'],
+  },
+  {
+    desc: "Protegir, restablir i promoure l'ús sostenible dels ecosistemes terrestres, gestionar els boscos sosteniblement, combatre la desertificació i detenir la pèrdua de biodiversitat. La protecció de les espècies en perill i els seus hàbitats és una prioritat urgent.",
+    keywords: ['biodiversitat', 'boscos', 'ecosistemes', 'desertificació', 'espècies en perill'],
+  },
+  {
+    desc: "Promoure societats pacífiques i inclusives, facilitar l'accés a la justícia per a tothom i construir institucions eficaces, responsables i inclusives. Inclou la reducció de la violència, la lluita contra la corrupció i el foment de l'accés a la informació pública.",
+    keywords: ['pau', 'justícia', 'institucions', 'corrupció', 'drets humans'],
+  },
+  {
+    desc: "Reforçar els mitjans d'implementació i revitalitzar l'Aliança Mundial per al Desenvolupament Sostenible. Inclou la mobilització de recursos financers, la transferència tecnològica als països en vies de desenvolupament, la creació de capacitats i el comerç multilateral equitatiu.",
+    keywords: ['cooperació', 'finançament', 'transferència tecnològica', 'comerç just', 'partenariats'],
+  },
+];
+
 export function fmtDuration(seconds) {
   if (seconds < 60) return `${seconds.toFixed(0)} s`;
   if (seconds < 3600) return `${(seconds / 60).toFixed(1)} min`;

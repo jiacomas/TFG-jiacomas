@@ -3,94 +3,30 @@ import { ODS, METRICS, COMPUTE, MODEL_INFO, MODEL_ORDER, fmtDuration } from '../
 import { ODSBadge } from '../components';
 
 async function callModelAPI(text, modelKey) {
-  const modelBehaviors = {
-    rf: `Estàs simulant un classificador Random Forest entrenat amb features TF-IDF per a un problema de classificació multilabel d'ODS en anuncis del BOPB.
-Aquest model és MOLT CONSERVADOR: té alta precisió però molt baix recall (F1-macro 0.315).
-- Només prediu els ODS més obvis i dominants del text
-- Tendeix a no predir ODS minoritaris (14, 6, 5, 12, 2) tret que apareguin múltiples paraules clau directes
-- Si el text és curt, ambigu o no clarament d'algun ODS, predius RES (llista buida)
-- Acostuma a predir 1-2 ODS com a màxim
-- Funciona només amb paraules clau, no entén context semàntic`,
-    xgb: `Estàs simulant XGBoost amb gradient boosting sobre features TF-IDF per a classificació multilabel d'ODS al BOPB.
-Bon equilibri precisió-recall (F1-macro 0.688). Comportament:
-- Detecta ODS principals i alguns secundaris si hi ha senyals clares
-- Conservador però menys que Random Forest
-- Bo amb ODS majoritaris (8, 11, 9, 10, 3), més limitat amb minoritaris (14, 6, 12)
-- Acostuma a predir 1-3 ODS
-- Es basa en paraules clau però amb millor calibratge que RF`,
-    berta: `Estàs simulant BERTa, un model RoBERTa preentrenat en català fine-tunejat per classificació multilabel ODS.
-Bon recall en classes minoritàries (F1-macro 0.669, recall macro 0.666).
-- Captura context semàntic del català
-- Sensible a ODS minoritaris (6, 13, 16, 17)
-- Pot tenir falsos positius en alguns casos
-- Acostuma a predir 2-4 ODS
-- A vegades sobreprediu però rarament oblida un ODS rellevant
-- Treballa sobre els primers 256 tokens (pot perdre info de textos llargs)`,
-    mmbert: `Estàs simulant mmBERT, ModernBERT multilingüe fine-tunejat, EL MILLOR MODEL del projecte.
-F1-macro 0.742, F1-micro 0.833. Comportament:
-- Excel·lent en context semàntic multilingüe
-- Millor model per ODS minoritaris (14, 6, 2): aconsegueix detectar-los
-- Equilibri òptim entre precisió i recall
-- Acostuma a predir 2-4 ODS amb alta precisió
-- Detecta dependències subtils entre ODS (3↔11, 9↔11, 8↔11)
-- Treballa sobre els primers 256 tokens`,
-  };
-
-  const ods_descriptions = ODS.map(o => `${o.n}: ${o.short}`).join('; ');
-
-  const prompt = `${modelBehaviors[modelKey]}
-
-Llista dels 17 ODS:
-${ods_descriptions}
-
-Anunci del BOPB a classificar:
-"""
-${text.slice(0, 8000)}
-"""
-
-Comporta't EXACTAMENT com el model descrit. Retorna NOMÉS un JSON vàlid amb aquesta estructura, sense cap text addicional ni codi fences:
-{
-  "predicted": [llista d'enters dels ODS predits, p.ex. [8, 11]],
-  "confidences": {"1": 0.05, "2": 0.03, ..., "17": 0.08},
-  "reasoning": "Frase curta en català (max 2 frases) explicant per què aquest model en concret prediu això"
-}
-
-Les confidences han de tenir totes les 17 claus (de "1" a "17") amb valors entre 0 i 1.
-Els valors d'ODS dins "predicted" han de coincidir amb els que tinguin confidence alta segons el llindar característic del model.
-Si el model no prediu cap ODS, "predicted" ha de ser [].`;
-
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-6",
-      max_tokens: 1000,
-      messages: [{ role: "user", content: prompt }],
-    })
+  const response = await fetch('/api/predict', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text: text.slice(0, 8000), model: modelKey }),
   });
 
-  if (!response.ok) throw new Error('API error: ' + response.status);
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({ detail: response.statusText }));
+    throw new Error(err.detail || `Error ${response.status}`);
+  }
 
   const data = await response.json();
-  const textResponse = data.content
-    .map(b => b.type === 'text' ? b.text : '')
-    .filter(Boolean)
-    .join('');
 
-  const cleaned = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
-  const parsed = JSON.parse(cleaned);
-
-  const predicted = (parsed.predicted || []).filter(n => Number.isInteger(n) && n >= 1 && n <= 17);
+  const predicted = (data.predicted || []).filter(n => Number.isInteger(n) && n >= 1 && n <= 17);
   const confidences = {};
   for (let i = 1; i <= 17; i++) {
-    const v = parsed.confidences?.[String(i)];
+    const v = data.confidences?.[String(i)];
     confidences[i] = (typeof v === 'number' && v >= 0 && v <= 1) ? v : 0.05;
   }
 
   return {
     predicted,
     confidences,
-    reasoning: parsed.reasoning || '',
+    reasoning: data.reasoning || '',
   };
 }
 
@@ -177,8 +113,8 @@ function LatestResult({ entry }) {
             </div>
           </div>
           <p className="text-[10px] text-stone-400 mt-3 leading-relaxed">
-            Els temps d'inferència i RAM són estimats a partir de les mesures reals del model durant l'avaluació del TFG.
-            Aquesta interfície utilitza l'API de Claude per simular el comportament del model entrenat.
+            Els temps d'inferència i RAM mostrats corresponen a les mesures reals obtingudes durant l'avaluació del TFG (CPU, conjunt de test complet).
+            La latència de l'API reflecteix el temps de càrrega del model + inferència local en CPU.
           </p>
         </div>
       </div>
@@ -361,7 +297,12 @@ export default function PredictPage() {
       setHistory(h => [entry, ...h]);
     } catch (e) {
       console.error(e);
-      setError('Hi ha hagut un error en la predicció. Torna-ho a provar.');
+      const msg = e.message || '';
+      if (msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('Load failed')) {
+        setError('No s\'ha pogut connectar amb el servidor de predicció. Assegura\'t que l\'API està en marxa: cd /Users/jia/Documents/TFG && tfg/bin/uvicorn api.main:app --port 8000');
+      } else {
+        setError(`Error en la predicció: ${msg}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -381,8 +322,12 @@ export default function PredictPage() {
         </h1>
         <p className="text-stone-600 text-lg leading-relaxed">
           Obre el <a className="underline hover:text-stone-900" href="https://bop.diba.cat/cercador-butlletins" target="_blank" rel="noreferrer">cercador del BOPB</a>, copia el text d'un anunci real i prova-hi els quatre
-          models. L'historial de la sessió guarda les prediccions perquè puguis comparar-les.
+          models preentrenats. L&apos;historial de la sessió guarda les prediccions perquè puguis comparar-les.
         </p>
+        <div className="mt-3 bg-stone-100 border border-stone-200 rounded-lg px-4 py-2.5 text-xs text-stone-600 font-mono">
+          <span className="text-stone-400 mr-2">$</span>
+          cd /Users/jia/Documents/TFG &amp;&amp; tfg/bin/uvicorn api.main:app --port 8000
+        </div>
       </div>
 
       <div className="grid lg:grid-cols-12 gap-8">
@@ -464,7 +409,7 @@ export default function PredictPage() {
             {loading ? (
               <>
                 <span className="animate-pulse">●</span>
-                <span>{MODEL_INFO[model].name} està prediant…</span>
+                <span>{MODEL_INFO[model].name} està predint…</span>
               </>
             ) : (
               <span>Predir ODS amb {MODEL_INFO[model].name}</span>

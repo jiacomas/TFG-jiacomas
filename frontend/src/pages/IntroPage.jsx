@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from 'recharts';
-import { ODS, ODS_FREQ_DEFAULT } from '../constants';
+import { ODS, ODS_DETAILS, ODS_FREQ_DEFAULT } from '../constants';
 import { Stat, SectionTitle } from '../components';
 
 // Fallback co-occurrence matrix used before eda_data.json loads
@@ -28,7 +28,7 @@ const M_DEFAULT = [
 
 function CooccurrenceHeatmap({ matrix }) {
   const M = matrix ?? M_DEFAULT;
-  const max = Math.max(...M.flat());
+  const max = Math.max(...M.flatMap((row, i) => row.filter((_, j) => i !== j)));
   const color = (v) => {
     if (v === 0) return '#f5f5f4';
     const t = Math.min(1, Math.sqrt(v / max));
@@ -72,6 +72,79 @@ function CooccurrenceHeatmap({ matrix }) {
   );
 }
 
+function ODSGrid() {
+  const [selected, setSelected] = useState(null);
+
+  return (
+    <div>
+      <div className="grid grid-cols-4 sm:grid-cols-6 gap-1.5">
+        {ODS.map(o => {
+          const isSelected = selected === o.n;
+          return (
+            <button
+              key={o.n}
+              onClick={() => setSelected(isSelected ? null : o.n)}
+              className={`group rounded flex flex-col items-center justify-center p-2 gap-0.5 transition-all duration-150 cursor-pointer ${isSelected
+                ? 'ring-2 ring-offset-2 ring-stone-900 scale-95'
+                : 'hover:brightness-110 hover:scale-105'
+                }`}
+              style={{
+                backgroundColor: o.color,
+                aspectRatio: '1',
+              }}
+              title={`ODS ${o.n}: ${o.short}`}
+            >
+              <span className="text-white font-bold tabular-nums text-sm leading-none">{o.n}</span>
+              <span className="text-white/70 text-[8px] leading-tight text-center line-clamp-2 hidden sm:block px-0.5">{o.short}</span>
+            </button>
+          );
+        })}
+        <div className="rounded bg-stone-100 border border-dashed border-stone-300" style={{ aspectRatio: '1' }} />
+      </div>
+
+      {selected && (() => {
+        const o = ODS[selected - 1];
+        const d = ODS_DETAILS[selected - 1];
+        return (
+          <div className="mt-3 bg-white border border-stone-200 rounded-lg p-4 text-sm transition-all duration-200">
+            <div className="flex items-start gap-3">
+              <div
+                className="shrink-0 w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-xl tabular-nums shadow-sm"
+                style={{ backgroundColor: o.color }}
+              >
+                {selected}
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-baseline gap-2 flex-wrap mb-1.5">
+                  <span className="font-semibold text-stone-600">{o.short}</span>
+                </div>
+                <p className="text-stone-600 text-xs leading-relaxed mb-2">{d.desc}</p>
+                <div className="flex flex-wrap gap-1">
+                  {d.keywords.map(kw => (
+                    <span
+                      key={kw}
+                      className="text-[10px] px-2 py-0.5 rounded-full text-white"
+                      style={{ backgroundColor: o.color + 'cc' }}
+                    >
+                      {kw}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {!selected && (
+        <p className="text-xs text-stone-400 mt-3 text-center">
+          Fes clic en un ODS per veure&apos;n la descripció
+        </p>
+      )}
+    </div>
+  );
+}
+
 export default function IntroPage({ edaData }) {
   const odsFreq = edaData?.label_counts ?? ODS_FREQ_DEFAULT;
   const freqData = odsFreq.map((v, i) => ({ ods: `ODS ${i + 1}`, count: v, color: ODS[i].color, n: i + 1 }));
@@ -98,24 +171,10 @@ export default function IntroPage({ edaData }) {
           </p>
         </div>
         <div className="md:col-span-5">
-          <div className="grid grid-cols-6 gap-1.5">
-            {ODS.map(o => (
-              <div
-                key={o.n}
-                className="aspect-square rounded flex items-center justify-center text-white text-xs font-bold tabular-nums"
-                style={{ backgroundColor: o.color }}
-                title={`ODS ${o.n}: ${o.short}`}
-              >
-                {o.n}
-              </div>
-            ))}
-            <div className="aspect-square rounded bg-stone-100 border border-dashed border-stone-300" />
+          <div className="text-xs uppercase tracking-wider text-stone-500 mb-3 font-medium">
+            Els 17 ODS — fes clic per explorar
           </div>
-          <p className="text-xs text-stone-500 mt-3 leading-relaxed">
-            Els 17 ODS definits per Nacions Unides el 2015. Cada anunci del BOPB
-            pot estar associat simultàniament a diversos d&apos;aquests objectius &mdash;
-            d&apos;aquí la natura <em>multilabel</em> del problema.
-          </p>
+          <ODSGrid />
         </div>
       </div>
 
