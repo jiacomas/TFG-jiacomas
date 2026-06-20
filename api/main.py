@@ -1,3 +1,14 @@
+# ruff: noqa: E402
+
+import os
+
+# Must be set before any ML library imports.
+# Forcing single-thread mode here prevents the fork entirely.
+os.environ.setdefault("OMP_NUM_THREADS", "1")
+os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
+os.environ.setdefault("MKL_NUM_THREADS", "1")
+os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+
 import pickle
 import re
 import unicodedata
@@ -83,14 +94,33 @@ class BertMultilabel(nn.Module):
 
 
 # --- Model loaders ---------------------------------------------------------
+def _force_single_thread(model) -> None:
+    """Patch n_jobs=1 on model and all sub-estimators.
+
+    RandomForestClassifier is saved with n_jobs=-1. On macOS, joblib's loky
+    backend forks worker processes — which segfaults after PyTorch is imported
+    because fork() doesn't play well with PyTorch's internal CUDA/MPS state.
+    Setting n_jobs=1 forces sequential execution and avoids the fork entirely.
+    """
+    if hasattr(model, "n_jobs"):
+        model.n_jobs = 1
+    for est in getattr(model, "estimators_", []):
+        if hasattr(est, "n_jobs"):
+            est.n_jobs = 1
+
+
 def _load_ml_models():
     if "tfidf" not in _cache:
         with open(PROCESSED_ML_DIR / "tfidf_model.pkl", "rb") as f:
             _cache["tfidf"] = pickle.load(f)
     if "rf" not in _cache:
-        _cache["rf"] = joblib.load(MODELS_DIR / "random_forest_balanced.pkl")
+        rf = joblib.load(MODELS_DIR / "random_forest_balanced.pkl")
+        _force_single_thread(rf)
+        _cache["rf"] = rf
     if "xgb" not in _cache:
-        _cache["xgb"] = joblib.load(MODELS_DIR / "xgboost_balanced.pkl")
+        xgb_model = joblib.load(MODELS_DIR / "xgboost_balanced.pkl")
+        _force_single_thread(xgb_model)
+        _cache["xgb"] = xgb_model
 
 
 def _load_dl_model(model_key: str):
