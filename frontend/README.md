@@ -25,9 +25,9 @@ frontend/
 
 ## Flux de dades
 
-Les dades de l'AFE (freqüències dels ODS, matriu de coocurrència i mètriques multilabel) es carreguen en temps d'execució des de `../result/eda_data.json`, fitxer generat pel quadern `notebooks/02_eda.ipynb`.
+Les dades de l'AFE (freqüències dels ODS, matriu de coocurrència i mètriques multilabel) es carreguen en temps d'execució des de `../results/eda_data.json`, fitxer generat pel quadern `notebooks/02_eda.ipynb`.
 
-Vite serveix el directori `result/` com a directori públic (`publicDir: '../result'` a `vite.config.js`), de manera que el fitxer està disponible a `/eda_data.json` durant el desenvolupament i es copia automàticament a `dist/` durant la compilació.
+Vite serveix el directori `results/` com a directori públic (`publicDir: '../results'` a `vite.config.js`), de manera que el fitxer està disponible a `/eda_data.json` durant el desenvolupament i es copia automàticament a `dist/` durant la compilació.
 
 Per regenerar el fitxer de dades, només cal tornar a executar el quadern `02_eda.ipynb`.
 
