@@ -1,22 +1,28 @@
+import {
+  HandCoins, Wheat, HeartPulse, GraduationCap, Users,
+  Droplets, Sun, Briefcase, Factory, Scale, Building2,
+  Recycle, CloudRain, Fish, Trees, Gavel, Handshake,
+} from 'lucide-react';
+
 // ODS definitions
 export const ODS = [
-  { n: 1, short: 'Fi de la pobresa', color: '#E5243B' },
-  { n: 2, short: 'Fam zero', color: '#DDA63A' },
-  { n: 3, short: 'Salut i benestar', color: '#4C9F38' },
-  { n: 4, short: 'Educació de qualitat', color: '#C5192D' },
-  { n: 5, short: 'Igualtat de gènere', color: '#FF3A21' },
-  { n: 6, short: 'Aigua neta i sanejament', color: '#26BDE2' },
-  { n: 7, short: 'Energia neta i assequible', color: '#FCC30B' },
-  { n: 8, short: 'Treball digne i creixement econòmic', color: '#A21942' },
-  { n: 9, short: 'Indústria, innovació, infraestructura', color: '#FD6925' },
-  { n: 10, short: 'Reducció de desigualtats', color: '#DD1367' },
-  { n: 11, short: 'Ciutats i comunitats sostenibles', color: '#FD9D24' },
-  { n: 12, short: 'Consum i producció responsables', color: '#BF8B2E' },
-  { n: 13, short: 'Acció climàtica', color: '#3F7E44' },
-  { n: 14, short: 'Vida submarina', color: '#0A97D9' },
-  { n: 15, short: "Vida d'ecosistemes terrestres", color: '#56C02B' },
-  { n: 16, short: 'Pau, justícia i institucions sòlides', color: '#00689D' },
-  { n: 17, short: 'Aliances pels objectius', color: '#19486A' },
+  { n: 1, short: 'Fi de la pobresa', color: '#E5243B', Icon: HandCoins },
+  { n: 2, short: 'Fam zero', color: '#DDA63A', Icon: Wheat },
+  { n: 3, short: 'Salut i benestar', color: '#4C9F38', Icon: HeartPulse },
+  { n: 4, short: 'Educació de qualitat', color: '#C5192D', Icon: GraduationCap },
+  { n: 5, short: 'Igualtat de gènere', color: '#FF3A21', Icon: Users },
+  { n: 6, short: 'Aigua neta i sanejament', color: '#26BDE2', Icon: Droplets },
+  { n: 7, short: 'Energia neta i assequible', color: '#FCC30B', Icon: Sun },
+  { n: 8, short: 'Treball digne i creixement econòmic', color: '#A21942', Icon: Briefcase },
+  { n: 9, short: 'Indústria, innovació, infraestructura', color: '#FD6925', Icon: Factory },
+  { n: 10, short: 'Reducció de desigualtats', color: '#DD1367', Icon: Scale },
+  { n: 11, short: 'Ciutats i comunitats sostenibles', color: '#FD9D24', Icon: Building2 },
+  { n: 12, short: 'Consum i producció responsables', color: '#BF8B2E', Icon: Recycle },
+  { n: 13, short: 'Acció climàtica', color: '#3F7E44', Icon: CloudRain },
+  { n: 14, short: 'Vida submarina', color: '#0A97D9', Icon: Fish },
+  { n: 15, short: "Vida d'ecosistemes terrestres", color: '#56C02B', Icon: Trees },
+  { n: 16, short: 'Pau, justícia i institucions sòlides', color: '#00689D', Icon: Gavel },
+  { n: 17, short: 'Aliances pels objectius', color: '#19486A', Icon: Handshake },
 ];
 
 // Fallback ODS frequencies used before eda_data.json loads
@@ -106,71 +112,71 @@ export const MODEL_ORDER = ['rf', 'xgb', 'berta', 'mmbert'];
 
 export const ODS_DETAILS = [
   {
-    desc: "Posar fi a la pobresa en totes les seves formes arreu del món. Cal garantir sistemes de protecció social, accés igualitari als recursos econòmics i resiliència davant els riscos i desastres. L'any 2015, 736 milions de persones vivien amb menys d'1,90 dòlars al dia.",
+    desc: "Posar fi a la pobresa en totes les seves formes arreu del món. Cal garantir sistemes de protecció social, accés igualitari als recursos econòmics i resiliència davant els riscos i desastres. La proporció de població mundial en pobresa extrema va passar del 36% el 1990 al 9% el 2022, però la pandèmia va trencar tres dècades d'avenços: la pobresa no és només econòmica, també implica manca de drets bàsics.",
     keywords: ['pobresa extrema', 'protecció social', 'vulnerabilitat', 'resiliència', 'drets econòmics'],
   },
   {
-    desc: "Posar fi a la gana, aconseguir la seguretat alimentària, millorar la nutrició i promoure l'agricultura sostenible. Cal duplicar la productivitat agrícola i garantir sistemes alimentaris sostenibles per a tota la població, especialment els grups vulnerables i les poblacions rurals.",
+    desc: "Posar fi a la gana, aconseguir la seguretat alimentària, millorar la nutrició i promoure l'agricultura sostenible. Cal duplicar la productivitat agrícola i garantir sistemes alimentaris sostenibles per a tota la població, especialment els grups vulnerables i les poblacions rurals. La fam ha augmentat de forma alarmant des del 2019, afectant gairebé 1 de cada 11 persones el 2023.",
     keywords: ['alimentació', 'agricultura', 'nutrició', 'biodiversitat', 'seguretat alimentària'],
   },
   {
-    desc: "Garantir una vida sana i promoure el benestar per a totes les persones de totes les edats. Inclou la reducció de la mortalitat materna i infantil, el fi de les epidèmies de SIDA, tuberculosi i malària, i l'assoliment de la cobertura sanitària universal.",
+    desc: "Garantir una vida sana i promoure el benestar per a totes les persones de totes les edats. Inclou la reducció de la mortalitat materna i infantil, el fi de les epidèmies de SIDA, tuberculosi i malària, i l'assoliment de la cobertura sanitària universal. S'han registrat avenços en mortalitat infantil i materna, però augmenten les malalties transmissibles i no transmissibles.",
     keywords: ['salut', 'malalties', 'mortalitat', 'cobertura sanitària', 'benestar mental'],
   },
   {
-    desc: "Garantir una educació inclusiva, equitativa i de qualitat i promoure oportunitats d'aprenentatge permanent per a tothom. L'accés universal a l'educació bàsica, la formació tècnica i professional i l'ensenyament superior equitatiu son pilars fonamentals del desenvolupament.",
+    desc: "Garantir una educació inclusiva, equitativa i de qualitat i promoure oportunitats d'aprenentatge permanent per a tothom. L'accés universal a l'educació bàsica, la formació tècnica i professional i l'ensenyament superior equitatiu son pilars fonamentals del desenvolupament. 272 milions d'infants i joves segueixen exclosos del sistema educatiu segons l'Informe ODS 2025.",
     keywords: ['escoles', 'ensenyament', 'formació professional', 'inclusió', 'alfabetització'],
   },
   {
-    desc: "Assolir la igualtat entre els gèneres i apoderar totes les dones i les nenes. Inclou l'eliminació de la discriminació, la violència i les pràctiques perjudicials, l'accés igualitari als recursos econòmics i la plena participació en la vida política i pública.",
+    desc: "Assolir la igualtat entre els gèneres i apoderar totes les dones i les nenes. Inclou l'eliminació de la discriminació, la violència i les pràctiques perjudicials, l'accés igualitari als recursos econòmics i la plena participació en la vida política i pública. És condició necessària per a un món pacífic, pròsper i sostenible, però els avenços són lents i desiguals segons la regió.",
     keywords: ['igualtat gènere', 'dones', 'discriminació', 'violència', 'apoderament'],
   },
   {
-    desc: "Garantir la disponibilitat i la gestió sostenible de l'aigua i el sanejament per a tothom. L'accés a l'aigua potable, el tractament d'aigües residuals, la gestió integrada dels recursos hídrics i la protecció dels ecosistemes aquàtics son prioritats clau.",
+    desc: "Garantir la disponibilitat i la gestió sostenible de l'aigua i el sanejament per a tothom. L'accés a l'aigua potable, el tractament d'aigües residuals, la gestió integrada dels recursos hídrics i la protecció dels ecosistemes aquàtics son prioritats clau. L'escassetat d'aigua afecta més del 40% de la població mundial i és transversal a clima, alimentació i salut.",
     keywords: ['aigua potable', 'sanejament', 'higiene', 'gestió hídrica', 'ecosistemes aquàtics'],
   },
   {
-    desc: "Garantir l'accés a una energia assequible, fiable, sostenible i moderna per a tothom. L'increment de les energies renovables, la millora de l'eficiència energètica i l'expansió de la infraestructura d'energia neta son objectius centrals per al 2030.",
+    desc: "Garantir l'accés a una energia assequible, fiable, sostenible i moderna per a tothom. L'increment de les energies renovables, la millora de l'eficiència energètica i l'expansió de la infraestructura d'energia neta son objectius centrals per al 2030. L'energia és la causa principal de les emissions de CO₂ globals, de manera que la transició renovable és clau per al clima.",
     keywords: ['energies renovables', 'eficiència energètica', 'accés energia', 'solar', 'eòlica'],
   },
   {
-    desc: "Promoure el creixement econòmic sostingut, inclusiu i sostenible, el ple ocupació productiva i el treball digne per a tothom. Inclou la reducció de la desocupació juvenil, l'erradicació del treball forçós i el foment de l'emprenedoria i la innovació.",
+    desc: "Promoure el creixement econòmic sostingut, inclusiu i sostenible, el ple ocupació productiva i el treball digne per a tothom. Inclou la reducció de la desocupació juvenil, l'erradicació del treball forçós i el foment de l'emprenedoria i la innovació. La productivitat global s'ha estancat i el treball informal continua afectant 2.000 milions de persones.",
     keywords: ['ocupació', 'creixement econòmic', 'treball digne', 'emprenedoria', 'productivitat'],
   },
   {
-    desc: "Construir infraestructures resilients, promoure la industrialització inclusiva i sostenible i fomentar la innovació. L'accés universal a les TIC, la inversió en recerca i desenvolupament tecnològic, i la construcció d'infraestructures de qualitat impulsen el progrés.",
+    desc: "Construir infraestructures resilients, promoure la industrialització inclusiva i sostenible i fomentar la innovació. L'accés universal a les TIC, la inversió en recerca i desenvolupament tecnològic, i la construcció d'infraestructures de qualitat impulsen el progrés. La indústria genera 1 de cada 4 llocs de treball al món i és pal de paller del desenvolupament.",
     keywords: ['infraestructures', 'innovació', 'industria', 'tecnologia', 'investigació'],
   },
   {
-    desc: "Reduir la desigualtat en i entre els països. Inclou la reducció de la desigualtat d'ingressos, la facilitació de la migració segura, la millora de la representació dels països en vies de desenvolupament i la regulació justa dels mercats financers globals.",
+    desc: "Reduir la desigualtat en i entre els països. Inclou la reducció de la desigualtat d'ingressos, la facilitació de la migració segura, la millora de la representació dels països en vies de desenvolupament i la regulació justa dels mercats financers globals. Les desigualtats no només són d'ingressos: també d'oportunitats, accés a serveis i veu política, i la COVID ha eixamplat moltes d'aquestes bretxes.",
     keywords: ['desigualtat', 'inclusió', 'migració', 'redistribució', 'discriminació'],
   },
   {
-    desc: "Aconseguir que les ciutats i els assentaments humans siguin inclusius, segurs, resilients i sostenibles. Inclou l'accés a l'habitatge assequible, el transport sostenible, la planificació urbana participativa i la protecció del patrimoni cultural i natural.",
+    desc: "Aconseguir que les ciutats i els assentaments humans siguin inclusius, segurs, resilients i sostenibles. Inclou l'accés a l'habitatge assequible, el transport sostenible, la planificació urbana participativa i la protecció del patrimoni cultural i natural. Més de la meitat de la població mundial viu en ciutats; el 2050 serà el 68%, fet que en fa la línia de front del desenvolupament sostenible.",
     keywords: ['habitatge', 'urbanisme', 'transport', 'planificació urbana', 'resiliència urbana'],
   },
   {
-    desc: "Garantir modalitats de consum i producció sostenibles. La gestió eficient dels recursos naturals, la reducció de residus alimentaris, la informació als consumidors sobre el consum sostenible i la promoció de la contractació pública sostenible son metes centrals.",
+    desc: "Garantir modalitats de consum i producció sostenibles. La gestió eficient dels recursos naturals, la reducció de residus alimentaris, la informació als consumidors sobre el consum sostenible i la promoció de la contractació pública sostenible son metes centrals. El planeta consumeix recursos al ritme d'1,7 Terres l'any: cal desacoblar el creixement econòmic de la degradació ambiental.",
     keywords: ['residus', 'consum responsable', 'producció sostenible', 'reciclatge', 'eficiència'],
   },
   {
-    desc: "Adoptar mesures urgents per combatre el canvi climàtic i els seus efectes devastadors. Inclou la incorporació de mesures de mitigació als plans nacionals, l'educació climàtica i la construcció de capacitats per a la planificació climàtica als països en vies de desenvolupament.",
+    desc: "Adoptar mesures urgents per combatre el canvi climàtic i els seus efectes devastadors. Inclou la incorporació de mesures de mitigació als plans nacionals, l'educació climàtica i la construcció de capacitats per a la planificació climàtica als països en vies de desenvolupament. El 2024 ha estat l'any més càlid registrat i les emissions continuen augmentant tot i els compromisos de l'Acord de París.",
     keywords: ['canvi climàtic', 'emissions CO2', 'mitigació', 'adaptació', 'resiliència climàtica'],
   },
   {
-    desc: "Conservar i utilitzar de manera sostenible els oceans, mars i recursos marins per al desenvolupament sostenible. La reducció de la contaminació marina, la gestió sostenible de la pesca, la protecció dels ecosistemes costaners i la recerca oceànica son prioritats urgents.",
+    desc: "Conservar i utilitzar de manera sostenible els oceans, mars i recursos marins per al desenvolupament sostenible. La reducció de la contaminació marina, la gestió sostenible de la pesca, la protecció dels ecosistemes costaners i la recerca oceànica son prioritats urgents. Els oceans cobreixen el 70% del planeta i absorbeixen el 30% del CO₂ emès; l'acidificació i la sobrepesca són amenaces crítiques.",
     keywords: ['oceans', 'pesca sostenible', 'contaminació marina', 'ecosistemes marins', 'acidificació'],
   },
   {
-    desc: "Protegir, restablir i promoure l'ús sostenible dels ecosistemes terrestres, gestionar els boscos sosteniblement, combatre la desertificació i detenir la pèrdua de biodiversitat. La protecció de les espècies en perill i els seus hàbitats és una prioritat urgent.",
+    desc: "Protegir, restablir i promoure l'ús sostenible dels ecosistemes terrestres, gestionar els boscos sosteniblement, combatre la desertificació i detenir la pèrdua de biodiversitat. La protecció de les espècies en perill i els seus hàbitats és una prioritat urgent. Cada any es perden 10 milions d'hectàrees de bosc.",
     keywords: ['biodiversitat', 'boscos', 'ecosistemes', 'desertificació', 'espècies en perill'],
   },
   {
-    desc: "Promoure societats pacífiques i inclusives, facilitar l'accés a la justícia per a tothom i construir institucions eficaces, responsables i inclusives. Inclou la reducció de la violència, la lluita contra la corrupció i el foment de l'accés a la informació pública.",
+    desc: "Promoure societats pacífiques i inclusives, facilitar l'accés a la justícia per a tothom i construir institucions eficaces, responsables i inclusives. Inclou la reducció de la violència, la lluita contra la corrupció i el foment de l'accés a la informació pública. La corrupció, l'evasió fiscal i la violència segueixen erosionant institucions arreu del món.",
     keywords: ['pau', 'justícia', 'institucions', 'corrupció', 'drets humans'],
   },
   {
-    desc: "Reforçar els mitjans d'implementació i revitalitzar l'Aliança Mundial per al Desenvolupament Sostenible. Inclou la mobilització de recursos financers, la transferència tecnològica als països en vies de desenvolupament, la creació de capacitats i el comerç multilateral equitatiu.",
+    desc: "Reforçar els mitjans d'implementació i revitalitzar l'Aliança Mundial per al Desenvolupament Sostenible. Inclou la mobilització de recursos financers, la transferència tecnològica als països en vies de desenvolupament, la creació de capacitats i el comerç multilateral equitatiu. Cap país pot assolir els ODS aïlladament: cal cooperació, finançament, tecnologia i coherència política.",
     keywords: ['cooperació', 'finançament', 'transferència tecnològica', 'comerç just', 'partenariats'],
   },
 ];

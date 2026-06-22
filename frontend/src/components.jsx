@@ -1,6 +1,46 @@
 import React from 'react';
 import { ODS } from './constants';
 
+/*
+ * Fmt — typographic helper.
+ * Wraps foreign / English terms and model & library names in <em> (italic),
+ * and code identifiers in <code> (monospace). Match is
+ * case-sensitive and boundary-protected so it never breaks inside a word.
+ */
+const ITALIC_TERMS = [
+  'rotary positional embeddings', 'Average Precision', 'Subset Accuracy', 'Subset accuracy',
+  'Hamming Loss', 'Hamming loss', 'Label Cardinality', 'Label Density', 'Gradient boosting',
+  'One-vs-Rest', 'Random Forest', 'Fine-tunejar', 'fine-tuning', 'fine-tuned', 'ModernBERT',
+  'RoBERTa', 'Transformers', 'Transformer', 'Ensemble', 'baseline', 'Pipeline', 'pipeline',
+  'stopwords', 'multilabel', 'XGBoost', 'mmBERT', 'BERTa', 'spaCy', 'Recall', 'recall', 'Tuning',
+  'tuning', 'tokens', 'Flash', 'ratio', 'test set', 'Background', 'embeddings', 'batch', 'epochs',
+];
+const MONO_TERMS = [
+  'BCEWithLogitsLoss', 'RandomForestClassifier', 'XGBClassifier', 'ca_core_news_lg', 'pos_weight',
+  'class_weight', 'learning_rate', 'n_estimators', 'tree_method', 'eval_metric', 'max_length',
+];
+
+const _terms = [
+  ...MONO_TERMS.map(t => ({ t, mono: true })),
+  ...ITALIC_TERMS.map(t => ({ t, mono: false })),
+].sort((a, b) => b.t.length - a.t.length);
+const _isMono = new Map(_terms.map(o => [o.t, o.mono]));
+const _esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const _re = new RegExp(
+  '(?<![A-Za-zÀ-ÿ0-9])(' + _terms.map(o => _esc(o.t)).join('|') + ')(?![A-Za-zÀ-ÿ0-9])'
+);
+
+export function Fmt({ children }) {
+  if (typeof children !== 'string') return children;
+  return children.split(_re).map((part, i) =>
+    _isMono.has(part)
+      ? (_isMono.get(part)
+        ? <code key={i} className="font-mono text-[0.92em]">{part}</code>
+        : <em key={i}>{part}</em>)
+      : part
+  );
+}
+
 export function ODSBadge({ n, withLabel = false }) {
   const ods = ODS[n - 1];
   return (

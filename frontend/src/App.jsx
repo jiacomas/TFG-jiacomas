@@ -49,7 +49,7 @@ export default function App() {
             </div>
             <div className="min-w-0">
               <div className="text-xs uppercase tracking-widest text-stone-500 font-medium leading-none">TFG · Enginyeria de Dades · UAB</div>
-              <div className="font-serif text-base md:text-lg text-stone-900 leading-tight truncate">BOPB × ODS — Classificació multilabel</div>
+              <div className="font-serif text-base md:text-lg text-stone-900 leading-tight truncate">BOPB × ODS — Classificació <em>multilabel</em></div>
             </div>
           </div>
           <nav className="flex gap-1 md:gap-2 shrink-0">

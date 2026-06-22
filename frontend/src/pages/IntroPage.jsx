@@ -3,7 +3,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from 'recharts';
 import { ODS, ODS_DETAILS, ODS_FREQ_DEFAULT } from '../constants';
-import { Stat, SectionTitle } from '../components';
+import { Stat, SectionTitle, Fmt } from '../components';
 
 // Fallback co-occurrence matrix used before eda_data.json loads
 const M_DEFAULT = [
@@ -28,45 +28,114 @@ const M_DEFAULT = [
 
 function CooccurrenceHeatmap({ matrix }) {
   const M = matrix ?? M_DEFAULT;
+  const [hovered, setHovered] = React.useState({ row: null, col: null });
+
   const max = Math.max(...M.flatMap((row, i) => row.filter((_, j) => i !== j)));
+
   const color = (v) => {
     if (v === 0) return '#f5f5f4';
+
     const t = Math.min(1, Math.sqrt(v / max));
     const r = Math.round(240 - 210 * t);
     const g = Math.round(249 - 191 * t);
     const b = Math.round(255 - 117 * t);
+
     return `rgb(${r},${g},${b})`;
   };
+
   return (
     <div className="bg-white border border-stone-200 rounded-lg p-4 overflow-x-auto">
       <div className="inline-block min-w-full">
-        <div className="grid gap-0.5" style={{ gridTemplateColumns: '40px repeat(17, minmax(36px, 1fr))' }}>
+        <div
+          className="grid gap-0.5"
+          style={{
+            gridTemplateColumns: "40px repeat(17, minmax(36px, 1fr))",
+          }}
+        >
           <div />
-          {ODS.map(o => (
-            <div key={`h${o.n}`} className="text-[10px] text-stone-500 tabular-nums text-center pb-1">{o.n}</div>
+
+          {/* Column headers */}
+          {ODS.map((o, j) => (
+            <div
+              key={`h${o.n}`}
+              className="text-[10px] tabular-nums text-center pb-1 rounded transition-all duration-150 font-medium"
+              style={{
+                color: hovered.col === j ? "#264653" : "#78716c",
+                backgroundColor:
+                  hovered.col === j ? "rgba(38,70,83,0.08)" : "transparent",
+              }}
+            >
+              {o.n}
+            </div>
           ))}
+
           {M.map((row, i) => (
             <React.Fragment key={`r${i}`}>
-              <div className="text-[10px] text-stone-500 tabular-nums flex items-center justify-end pr-1.5">ODS {i + 1}</div>
-              {row.map((v, j) => (
-                <div
-                  key={`c${i}-${j}`}
-                  className="aspect-square flex items-center justify-center text-[9px] tabular-nums rounded-sm"
-                  style={{
-                    backgroundColor: i === j ? '#f5f5f4' : color(v),
-                    color: v > 800 ? '#fff' : '#44403c',
-                  }}
-                  title={`ODS ${i + 1} ↔ ODS ${j + 1}: ${v}`}
-                >
-                  {i === j ? '·' : (v >= 100 ? v : '')}
-                </div>
-              ))}
+              {/* Row header */}
+              <div
+                className="text-[10px] tabular-nums flex items-center justify-end pr-1.5 rounded transition-all duration-150 font-medium"
+                style={{
+                  color: hovered.row === i ? "#264653" : "#78716c",
+                  backgroundColor:
+                    hovered.row === i ? "rgba(38,70,83,0.08)" : "transparent",
+                }}
+              >
+                ODS {i + 1}
+              </div>
+
+              {/* Cells */}
+              {row.map((v, j) => {
+                const active =
+                  hovered.row === null ||
+                  hovered.row === i ||
+                  hovered.col === j;
+
+                return (
+                  <div
+                    key={`c${i}-${j}`}
+                    onMouseEnter={() => setHovered({ row: i, col: j })}
+                    onMouseLeave={() =>
+                      setHovered({ row: null, col: null })
+                    }
+                    className="aspect-square flex items-center justify-center text-[9px] tabular-nums rounded-sm transition-all duration-150"
+                    style={{
+                      backgroundColor:
+                        i === j ? "#f5f5f4" : color(v),
+
+                      color:
+                        i === j
+                          ? "#a8a29e"
+                          : v > 800
+                            ? "#fff"
+                            : "#44403c",
+
+                      opacity: active ? 1 : 0.3,
+
+                      boxShadow:
+                        hovered.row === i || hovered.col === j
+                          ? "inset 0 0 0 1.5px rgba(38,70,83,.35)"
+                          : undefined,
+
+                      transform:
+                        hovered.row === i && hovered.col === j
+                          ? "scale(1.05)"
+                          : "scale(1)",
+                    }}
+                    title={`ODS ${i + 1} ↔ ODS ${j + 1}: ${v}`}
+                  >
+                    {i === j ? "·" : v >= 100 ? v : ""}
+                  </div>
+                );
+              })}
             </React.Fragment>
           ))}
         </div>
       </div>
+
       <div className="text-xs text-stone-500 mt-3">
-        Co-ocurrències absolutes. Cel·les blanques: parelles amb &lt; 100 co-ocurrències. Diagonal omesa.
+        Co-ocurrències absolutes. Passeu el cursor sobre una cel·la per
+        ressaltar la fila i la columna corresponents. Cel·les blanques:
+        parelles amb &lt;100 co-ocurrències. Diagonal omesa.
       </div>
     </div>
   );
@@ -80,11 +149,12 @@ function ODSGrid() {
       <div className="grid grid-cols-4 sm:grid-cols-6 gap-1.5">
         {ODS.map(o => {
           const isSelected = selected === o.n;
+          const Icon = o.Icon;
           return (
             <button
               key={o.n}
               onClick={() => setSelected(isSelected ? null : o.n)}
-              className={`group rounded flex flex-col items-center justify-center p-2 gap-0.5 transition-all duration-150 cursor-pointer ${isSelected
+              className={`group relative rounded overflow-hidden transition-all duration-150 cursor-pointer ${isSelected
                 ? 'ring-2 ring-offset-2 ring-stone-900 scale-95'
                 : 'hover:brightness-110 hover:scale-105'
                 }`}
@@ -94,8 +164,13 @@ function ODSGrid() {
               }}
               title={`ODS ${o.n}: ${o.short}`}
             >
-              <span className="text-white font-bold tabular-nums text-sm leading-none">{o.n}</span>
-              <span className="text-white/70 text-[8px] leading-tight text-center line-clamp-2 hidden sm:block px-0.5">{o.short}</span>
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 p-1.5">
+                <div className="flex items-center gap-1 text-white">
+                  <span className="font-bold tabular-nums text-sm leading-none">{o.n}</span>
+                  {Icon && <Icon size={16} strokeWidth={1.75} className="opacity-90 shrink-0" />}
+                </div>
+                <span className="text-white/70 text-[8px] leading-tight text-center line-clamp-2 hidden sm:block px-0.5">{o.short}</span>
+              </div>
             </button>
           );
         })}
@@ -109,16 +184,16 @@ function ODSGrid() {
           <div className="mt-3 bg-white border border-stone-200 rounded-lg p-4 text-sm transition-all duration-200">
             <div className="flex items-start gap-3">
               <div
-                className="shrink-0 w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-xl tabular-nums shadow-sm"
+                className="shrink-0 w-12 h-12 rounded-lg flex items-center justify-center text-white shadow-sm gap-0.5"
                 style={{ backgroundColor: o.color }}
               >
-                {selected}
+                <span className="font-bold text-lg tabular-nums leading-none">{selected}</span>
               </div>
               <div className="min-w-0">
                 <div className="flex items-baseline gap-2 flex-wrap mb-1.5">
                   <span className="font-semibold text-stone-600">{o.short}</span>
                 </div>
-                <p className="text-stone-600 text-xs leading-relaxed mb-2">{d.desc}</p>
+                <p className="text-stone-600 text-xs leading-relaxed mb-2"><Fmt>{d.desc}</Fmt></p>
                 <div className="flex flex-wrap gap-1">
                   {d.keywords.map(kw => (
                     <span
@@ -165,14 +240,12 @@ export default function IntroPage({ edaData }) {
             <span style={{ color: '#264653' }}>17 ODS</span>.
           </h1>
           <p className="text-stone-600 text-lg leading-relaxed">
-            Cada any es publiquen milers d&apos;anuncis al Butlletí Oficial de la Província de Barcelona,
-            cadascun associat a un o més Objectius de Desenvolupament Sostenible.
-            Aquest TFG explora si l&apos;aprenentatge automàtic i el profund poden automatitzar la classificació.
+            Cada any es publiquen milers d&apos;anuncis al Butlletí Oficial de la Província de Barcelona (BOPB), que aborden àmbits molt diversos de l&apos;administració pública. Aquest treball de fi de grau estudia l&apos;aplicació de tècniques d&apos;aprenentatge automàtic per classificar automàticament aquests anuncis segons els Objectius de Desenvolupament Sostenible (ODS), comparant diversos models clàssics i d&apos;aprenentatge profund.
           </p>
         </div>
         <div className="md:col-span-5">
           <div className="text-xs uppercase tracking-wider text-stone-500 mb-3 font-medium">
-            Els 17 ODS — fes clic per explorar
+            Els 17 Objectius de Desenvolupament Sostenible (ODS)
           </div>
           <ODSGrid />
         </div>
@@ -183,13 +256,13 @@ export default function IntroPage({ edaData }) {
         <Stat label="Anuncis totals" value="35.520" sub="2022–2024" />
         <Stat label="Amb almenys 1 ODS" value="19.284" sub="54,3% del corpus" />
         <Stat label="Etiquetes ODS" value="17" sub="problema multilabel" />
-        <Stat label="Models avaluats" value="4" sub="2 clàssics + 2 Transformers" />
+        <Stat label="Models avaluats" value="4" sub={<>2 clàssics + 2 <em>Transformers</em></>} />
       </div>
 
       {/* Context */}
       <section className="mb-20">
         <SectionTitle kicker="Context del problema" num="1.1">
-          Un repte de NLP multilabel sobre text administratiu en català
+          Un repte de NLP <em>multilabel</em> sobre text administratiu en català
         </SectionTitle>
         <div className="grid md:grid-cols-2 gap-10 text-stone-700 leading-relaxed">
           <div className="space-y-4">
@@ -209,10 +282,22 @@ export default function IntroPage({ edaData }) {
           <div className="bg-stone-50 border border-stone-200 rounded-lg p-6">
             <h4 className="font-serif text-lg mb-3 text-stone-900">Objectius específics</h4>
             <ol className="space-y-2 text-sm text-stone-600">
-              <li className="flex gap-3"><span className="font-mono text-stone-400">01</span>Preparar, integrar i netejar les dades històriques (XLSX + CSV de text).</li>
-              <li className="flex gap-3"><span className="font-mono text-stone-400">02</span>Implementar models clàssics (Random Forest, XGBoost) sobre TF-IDF.</li>
-              <li className="flex gap-3"><span className="font-mono text-stone-400">03</span>Fine-tunejar models Transformer en català (BERTa, mmBERT).</li>
-              <li className="flex gap-3"><span className="font-mono text-stone-400">04</span>Comparar rendiment, velocitat i cost computacional.</li>
+              <li className="flex gap-3">
+                <span className="font-mono text-stone-400">01</span>
+                <span>Preparar, integrar i netejar les dades històriques (XLSX + CSV de text).</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="font-mono text-stone-400">02</span>
+                <span>Implementar models clàssics (<i>Random Forest</i>, <i>XGBoost</i>) sobre TF-IDF.</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="font-mono text-stone-400">03</span>
+                <span><i>Fine-tunejar</i> models <i>Transformer</i> en català (<i>BERTa</i>, <i>mmBERT</i>).</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="font-mono text-stone-400">04</span>
+                <span>Comparar rendiment, velocitat i cost computacional.</span>
+              </li>
             </ol>
           </div>
         </div>
@@ -221,7 +306,7 @@ export default function IntroPage({ edaData }) {
       {/* Pipeline */}
       <section className="mb-20">
         <SectionTitle kicker="Metodologia" num="1.2">
-          Pipeline en tres fases
+          <em>Pipeline</em> en tres fases
         </SectionTitle>
         <div className="grid md:grid-cols-3 gap-6">
           {[
@@ -275,7 +360,7 @@ export default function IntroPage({ edaData }) {
                 {phase.items.map((item, j) => (
                   <li key={j} className="flex gap-2">
                     <span className="text-stone-300 mt-1">›</span>
-                    <span className="leading-relaxed">{item}</span>
+                    <span className="leading-relaxed"><Fmt>{item}</Fmt></span>
                   </li>
                 ))}
               </ul>
@@ -292,7 +377,7 @@ export default function IntroPage({ edaData }) {
         <p className="text-stone-700 leading-relaxed mb-6">
           La distribució d&apos;anuncis per ODS és molt desigual. ODS 11 (ciutats sostenibles) i ODS 8 (treball
           digne) concentren més de 9.000 anuncis cadascun, mentre que ODS 14 (vida submarina) en té
-          només 39 &mdash; un ratio de desbalanceig superior a 200×. Aquest fet té implicacions directes en
+          només 39 &mdash; un <em>ratio</em> de desbalanceig superior a 200×. Aquest fet té implicacions directes en
           l&apos;estratègia d&apos;entrenament.
         </p>
         <div className="bg-white border border-stone-200 rounded-lg p-6">
@@ -332,7 +417,7 @@ export default function IntroPage({ edaData }) {
       {/* Multilabel complexity */}
       <section className="mb-20">
         <SectionTitle kicker="Complexitat multilabel" num="1.4">
-          Mètriques característiques d&apos;un problema multilabel
+          Mètriques característiques d&apos;un problema <em>multilabel</em>
         </SectionTitle>
         <div className="grid md:grid-cols-4 gap-6">
           {[
@@ -342,7 +427,7 @@ export default function IntroPage({ edaData }) {
             { label: 'Anuncis amb ≥ 2 etiquetes', value: '50,8%', sub: '9.800 anuncis multi-etiquetats' },
           ].map((s, i) => (
             <div key={i} className="bg-white border border-stone-200 rounded-lg p-5">
-              <div className="text-xs uppercase tracking-widest text-stone-500 font-medium">{s.label}</div>
+              <div className="text-xs uppercase tracking-widest text-stone-500 font-medium"><Fmt>{s.label}</Fmt></div>
               <div className="text-3xl font-serif text-stone-900 tabular-nums mt-1">{s.value}</div>
               <div className="text-xs text-stone-500 mt-1">{s.sub}</div>
             </div>
@@ -351,8 +436,8 @@ export default function IntroPage({ edaData }) {
         <p className="text-stone-700 leading-relaxed mt-6">
           La densitat baixa (0,126) confirma que l&apos;espai d&apos;etiquetes és <em>esparcit</em>: cada anunci té
           només una petita fracció dels 17 ODS possibles. Combinada amb el fort desbalanceig, aquesta
-          característica fa que els models <em>OvR</em> (One-vs-Rest) hagin d&apos;aprendre a no predir
-          gairebé res la major part del temps &mdash; una trampa per al recall si no es compensa.
+          característica fa que els models <em>OvR</em> (<em>One-vs-Rest</em>) hagin d&apos;aprendre a no predir
+          gairebé res la major part del temps &mdash; una trampa per al <em>recall</em> si no es compensa.
         </p>
       </section>
 
@@ -398,8 +483,7 @@ export default function IntroPage({ edaData }) {
               </div>
             </dl>
             <p className="text-sm text-stone-600 mt-4 leading-relaxed">
-              La variabilitat de longitud és enorme. Els models Transformer truncats a 256 tokens
-              perdran informació en els anuncis més llargs &mdash; una limitació coneguda del projecte.
+              La variabilitat de longitud és enorme. Els models <em>Transformer</em> truncats a 256 <em>tokens</em> perdran informació en els anuncis més llargs &mdash; una limitació coneguda del projecte.
             </p>
           </div>
           <div className="bg-white border border-stone-200 rounded-lg p-6">

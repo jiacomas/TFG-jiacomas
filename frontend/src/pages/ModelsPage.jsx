@@ -5,7 +5,7 @@ import {
   ScatterChart, Scatter, ZAxis, Cell,
 } from 'recharts';
 import { ODS, F1_PER_ODS, METRICS, COMPUTE, MODEL_INFO, MODEL_ORDER, fmtDuration } from '../constants';
-import { Stat, SectionTitle } from '../components';
+import { Stat, SectionTitle, Fmt } from '../components';
 
 export default function ModelsPage() {
   const [selected, setSelected] = useState(null);
@@ -69,8 +69,8 @@ function ModelsOverview({ onSelect }) {
           <span className="text-stone-400"> un guanyador clar.</span>
         </h1>
         <p className="text-stone-600 text-lg leading-relaxed">
-          S&apos;han entrenat dos models clàssics (Random Forest, XGBoost) sobre TF-IDF i dos models
-          Transformer (BERTa, mmBERT) amb fine-tuning. Aquí pots comparar-los i, si en cliques un,
+          S&apos;han entrenat dos models clàssics (<em>Random Forest</em>, <em>XGBoost</em>) sobre TF-IDF i dos models
+          <em> Transformer</em> (<em>BERTa</em>, <em>mmBERT</em>) amb <em>fine-tuning</em>. Aquí pots comparar-los i, si en cliques un,
           aprofundir en la seva arquitectura i mètriques.
         </p>
       </div>
@@ -96,7 +96,7 @@ function ModelsOverview({ onSelect }) {
                 <span className="text-xs text-stone-400 group-hover:text-stone-900 transition">&rarr;</span>
               </div>
               <h3 className="font-serif text-2xl text-stone-900 mb-2">{m.name}</h3>
-              <p className="text-sm text-stone-600 leading-relaxed mb-4">{m.short}</p>
+              <p className="text-sm text-stone-600 leading-relaxed mb-4"><Fmt>{m.short}</Fmt></p>
               <div className="grid grid-cols-2 gap-2 pt-3 border-t border-stone-100">
                 <div>
                   <div className="text-[10px] uppercase tracking-wider text-stone-500">F1-macro</div>
@@ -118,7 +118,7 @@ function ModelsOverview({ onSelect }) {
       {/* Aggregated comparison */}
       <section className="mb-16">
         <SectionTitle kicker="Comparativa global" num="2.1">
-          Mètriques agregades sobre el test set
+          Mètriques agregades sobre el <em>test set</em>
         </SectionTitle>
         <div className="bg-white border border-stone-200 rounded-lg p-6 mb-6">
           <div style={{ width: '100%', height: 320 }}>
@@ -169,7 +169,7 @@ function ModelsOverview({ onSelect }) {
                 const best = dir === 'higher' ? Math.max(...values) : Math.min(...values);
                 return (
                   <tr key={key} className="border-t border-stone-100">
-                    <td className="px-4 py-2.5 text-stone-700">{label}</td>
+                    <td className="px-4 py-2.5 text-stone-700"><Fmt>{label}</Fmt></td>
                     {MODEL_ORDER.map((k, i) => {
                       const v = values[i];
                       const isBest = v === best;
@@ -190,7 +190,7 @@ function ModelsOverview({ onSelect }) {
           </table>
         </div>
         <p className="text-xs text-stone-500 mt-2">
-          &#9733; millor valor de la fila. Per a Hamming loss, més baix és millor.
+          &#9733; millor valor de la fila. Per a <em>Hamming loss</em>, més baix és millor.
         </p>
       </section>
 
@@ -201,8 +201,8 @@ function ModelsOverview({ onSelect }) {
         </SectionTitle>
         <p className="text-stone-700 leading-relaxed mb-6">
           La diferència entre models es fa més evident en ODS minoritaris.
-          Random Forest pràcticament no detecta ODS 14, 6 i 5. Els Transformers &mdash; sobretot mmBERT &mdash;
-          aconsegueixen recall significatiu fins i tot en categories amb molt pocs exemples.
+          <em> Random Forest</em> pràcticament no detecta ODS 14, 6 i 5. Els <em>Transformers</em> &mdash; sobretot <em>mmBERT</em> &mdash;
+          aconsegueixen <em>recall</em> significatiu fins i tot en categories amb molt pocs exemples.
         </p>
         <div className="bg-white border border-stone-200 rounded-lg p-6 mb-6">
           <div style={{ width: '100%', height: 380 }}>
@@ -234,7 +234,7 @@ function ModelsOverview({ onSelect }) {
               <RadarChart data={radarData} margin={{ top: 20, right: 30, bottom: 20, left: 30 }}>
                 <PolarGrid stroke="#e7e5e4" />
                 <PolarAngleAxis dataKey="ods" tick={{ fontSize: 11, fill: '#57534e' }} />
-                <PolarRadiusAxis angle={90} domain={[0, 1]} tick={{ fontSize: 10 }} stroke="#a8a29e" />
+                <PolarRadiusAxis angle={90} domain={[0, 1]} tick={false} />
                 <Radar name="Random Forest" dataKey="Random Forest" stroke={MODEL_INFO.rf.color} fill={MODEL_INFO.rf.color} fillOpacity={0.05} strokeWidth={2} />
                 <Radar name="XGBoost" dataKey="XGBoost" stroke={MODEL_INFO.xgb.color} fill={MODEL_INFO.xgb.color} fillOpacity={0.10} strokeWidth={2} />
                 <Radar name="BERTa" dataKey="BERTa" stroke={MODEL_INFO.berta.color} fill={MODEL_INFO.berta.color} fillOpacity={0.10} strokeWidth={2} />
@@ -253,8 +253,8 @@ function ModelsOverview({ onSelect }) {
           Rendiment vs. cost &mdash; el compromís clau
         </SectionTitle>
         <p className="text-stone-700 leading-relaxed mb-6">
-          La diferència en cost entre models clàssics i Transformer és d&apos;ordres de magnitud.
-          mmBERT triga 300&times; més a entrenar-se que XGBoost per guanyar 0,054 punts en F1-macro.
+          La diferència en cost entre models clàssics i <em>Transformer</em> és d&apos;ordres de magnitud.
+          <em> mmBERT</em> triga 300&times; més a entrenar-se que <em>XGBoost</em> per guanyar 0,054 punts en F1-macro.
           La decisió depèn de si el cas d&apos;ús prioritza precisió absoluta o eficiència.
         </p>
 
@@ -394,7 +394,7 @@ function ModelsOverview({ onSelect }) {
             <div className="text-xs uppercase tracking-wider text-stone-400 mb-2">Si prioritzes precisió</div>
             <h4 className="font-serif text-2xl mb-3">mmBERT</h4>
             <p className="text-sm text-stone-300 leading-relaxed">
-              Millor en tots els F1, millor recall en classes minoritàries (ODS 14, 6, 2). La inversió
+              Millor en tots els F1, millor <em>recall</em> en classes minoritàries (ODS 14, 6, 2). La inversió
               de cost computacional està justificada per a sistemes de producció on la cobertura
               d&apos;ODS minoritaris és crítica.
             </p>
@@ -403,7 +403,7 @@ function ModelsOverview({ onSelect }) {
             <div className="text-xs uppercase tracking-wider text-stone-500 mb-2">Si prioritzes eficiència</div>
             <h4 className="font-serif text-2xl mb-3 text-stone-900">XGBoost</h4>
             <p className="text-sm text-stone-700 leading-relaxed">
-              500&times; més ràpid que mmBERT a l&apos;entrenament i pràcticament instantani en inferència,
+              500&times; més ràpid que <em>mmBERT</em> a l&apos;entrenament i pràcticament instantani en inferència,
               amb un F1-micro a només 2,5 punts del millor. Òptim per a pilots o sistemes amb
               restriccions de maquinari.
             </p>
@@ -450,20 +450,20 @@ function ModelDetail({ modelKey, onBack }) {
         </a>
       </div>
       <h1 className="font-serif text-5xl md:text-6xl text-stone-900 mb-4">{m.name}</h1>
-      <p className="text-xl text-stone-600 leading-relaxed mb-10">{m.short}</p>
+      <p className="text-xl text-stone-600 leading-relaxed mb-10"><Fmt>{m.short}</Fmt></p>
 
       {/* Headline metrics */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12 py-8 border-y border-stone-200">
-        <Stat label="F1-macro" value={metric.f1_macro.toFixed(3)} sub="test set" />
-        <Stat label="F1-micro" value={metric.f1_micro.toFixed(3)} sub="test set" />
-        <Stat label="ROC-AUC micro" value={metric.roc_auc.toFixed(3)} sub="test set" />
-        <Stat label="Hamming loss" value={metric.hamming.toFixed(3)} sub="(menys = millor)" />
+        <Stat label="F1-macro" value={metric.f1_macro.toFixed(3)} sub={<em>test set</em>} />
+        <Stat label="F1-micro" value={metric.f1_micro.toFixed(3)} sub={<em>test set</em>} />
+        <Stat label="ROC-AUC micro" value={metric.roc_auc.toFixed(3)} sub={<em>test set</em>} />
+        <Stat label={<em>Hamming loss</em>} value={metric.hamming.toFixed(3)} sub="(menys = millor)" />
       </div>
 
       {/* Background */}
       <section className="mb-12">
-        <h2 className="text-xs uppercase tracking-[0.2em] text-stone-500 mb-3">Background</h2>
-        <p className="text-stone-700 leading-relaxed text-lg">{m.desc}</p>
+        <h2 className="text-xs uppercase tracking-[0.2em] text-stone-500 mb-3"><em>Background</em></h2>
+        <p className="text-stone-700 leading-relaxed text-lg"><Fmt>{m.desc}</Fmt></p>
       </section>
 
       {/* Config */}
@@ -473,7 +473,7 @@ function ModelDetail({ modelKey, onBack }) {
           <dl className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-sm">
             {Object.entries(m.config).map(([k, v]) => (
               <div key={k} className="flex justify-between py-1 border-b border-stone-200 last:border-0">
-                <dt className="text-stone-500">{k}</dt>
+                <dt className="text-stone-500"><Fmt>{k}</Fmt></dt>
                 <dd className="font-mono text-stone-900 text-right">{v}</dd>
               </div>
             ))}
@@ -486,20 +486,20 @@ function ModelDetail({ modelKey, onBack }) {
         <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-6">
           <h3 className="text-xs uppercase tracking-wider text-emerald-700 mb-3">Punts forts</h3>
           <ul className="space-y-2 text-sm text-stone-700">
-            {m.pros.map((p, i) => <li key={i} className="flex gap-2"><span className="text-emerald-600">&#10003;</span>{p}</li>)}
+            {m.pros.map((p, i) => <li key={i} className="flex gap-2"><span className="text-emerald-600">&#10003;</span><span><Fmt>{p}</Fmt></span></li>)}
           </ul>
         </div>
         <div className="bg-rose-50 border border-rose-200 rounded-lg p-6">
           <h3 className="text-xs uppercase tracking-wider text-rose-700 mb-3">Limitacions</h3>
           <ul className="space-y-2 text-sm text-stone-700">
-            {m.cons.map((p, i) => <li key={i} className="flex gap-2"><span className="text-rose-600">&#10007;</span>{p}</li>)}
+            {m.cons.map((p, i) => <li key={i} className="flex gap-2"><span className="text-rose-600">&#10007;</span><span><Fmt>{p}</Fmt></span></li>)}
           </ul>
         </div>
       </section>
 
       {/* Detailed metrics */}
       <section className="mb-12">
-        <h2 className="text-xs uppercase tracking-[0.2em] text-stone-500 mb-3">Mètriques detallades &mdash; test set</h2>
+        <h2 className="text-xs uppercase tracking-[0.2em] text-stone-500 mb-3">Mètriques detallades &mdash; <em>test set</em></h2>
         <div className="bg-white border border-stone-200 rounded-lg overflow-hidden">
           <table className="w-full text-sm">
             <tbody>
@@ -514,7 +514,7 @@ function ModelDetail({ modelKey, onBack }) {
                 ['Subset accuracy', metric.subset_acc, 3],
               ].map(([label, v, dec]) => (
                 <tr key={label} className="border-b border-stone-100 last:border-0">
-                  <td className="px-4 py-2.5 text-stone-600">{label}</td>
+                  <td className="px-4 py-2.5 text-stone-600"><Fmt>{label}</Fmt></td>
                   <td className="px-4 py-2.5 text-right font-mono tabular-nums text-stone-900">{v.toFixed(dec)}</td>
                 </tr>
               ))}
