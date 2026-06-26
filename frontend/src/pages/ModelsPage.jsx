@@ -7,6 +7,84 @@ import {
 import { ODS, F1_PER_ODS, METRICS, COMPUTE, MODEL_INFO, MODEL_ORDER, fmtDuration } from '../constants';
 import { Stat, SectionTitle, Fmt } from '../components';
 
+const METRIC_INFO = {
+  f1_micro: {
+    title: 'F1-micro',
+    def: 'Suma tots els TP (True Positives), FP (False Positives) i FN (False Negatives) de les 17 classes i calcula un únic F1 global. Agrega per instància: cada predicció d\'etiqueta compta igual.',
+    interp: 'Els ODS freqüents (ODS 1, 3, 8) dominen el resultat perquè generen més instàncies. Un F1-micro alt no garanteix bon rendiment en ODS minoritaris - per això cal combinar-lo amb el F1-macro.',
+  },
+  f1_macro: {
+    title: 'F1-macro',
+    def: 'Calcula el F1 de cada ODS per separat i en fa la mitjana simple. Agrega per classe: l\'ODS 14 (poc freqüent) pesa igual que l\'ODS 1 (molt freqüent).',
+    interp: 'Si el model ignora ODS minoritaris, el F1-macro cau notablement. Per això és la mètrica principal d\'aquest projecte: reflecteix si el model cobreix equilibradament tots els 17 ODS.',
+  },
+  f1_samples: {
+    title: 'F1-samples',
+    def: "Per a cada anunci calcula l'F1 entre el conjunt d'ODS predites i les reals, i en fa la mitjana. Agrega per document, no per classe.",
+    interp: "Específic de multilabel. Exemple: un anunci amb ODS {1,3,8} on el model prediu {1,3} obté F1=0.80 per aquell document. Mesura com d'encertats són els \"paquets d'ODS\" per anunci, independentment de quines classes siguin.",
+  },
+  prec_macro: {
+    title: 'Precisió macro',
+    def: "Promig de la precisió de cada ODS: proporció de prediccions positives que eren correctes.",
+    interp: 'Alta precisió = poques falses alarmes. Un model molt conservador (que quasi mai prediu) puntua bé aquí però tindrà recall molt baix.',
+  },
+  rec_macro: {
+    title: 'Recall macro',
+    def: "Promig del recall de cada ODS: proporció d'exemples positius que el model ha detectat.",
+    interp: 'Alt recall = el model no deixa escapar anuncis rellevants. Crític si es vol garantir cobertura completa de cada ODS, sobretot els minoritaris com l\'ODS 14 o 6.',
+  },
+  roc_auc: {
+    title: 'ROC-AUC micro',
+    def: "Àrea sota la corba ROC calculada de forma micro. Mesura la probabilitat que el model puntui més alt un exemple positiu que un de negatiu, agregant totes les classes.",
+    interp: '0.5 = equivalent a aleatori, 1.0 = perfecte. Independent del llindar de decisió: útil per comparar models sense haver de fixar un llindar de classificació.',
+  },
+  hamming: {
+    title: 'Hamming loss',
+    def: "Fracció d'etiquetes incorrectes sobre el total (17 etiquetes × nombre d'anuncis). Compta tant les etiquetes que s'haurien d'haver activat com les que no s'haurien d'haver activat.",
+    interp: 'Com menys millor. Comptabilitza cada error d\'etiqueta individualment, no per anunci. Fins i tot un bon model pot tenir ≈ 0.05 perquè gestiona 17 etiquetes per document.',
+  },
+  subset_acc: {
+    title: 'Subset accuracy',
+    def: "Proporció d'anuncis on el conjunt d'ODS predites coincideix exactament amb el real (cap etiqueta de més ni de menys).",
+    interp: 'Criteri molt estricte: una sola etiqueta incorrecta puntua 0 per aquell anunci. Un valor baix és esperable en multilabel; complementa el F1-samples, que sí que dóna crèdit parcial.',
+  },
+};
+
+function MetricTooltip({ metricKey }) {
+  const [pos, setPos] = useState(null);
+  const info = METRIC_INFO[metricKey];
+  if (!info) return null;
+  return (
+    <span className="inline-block ml-1 align-middle">
+      <button
+        className="text-stone-400 hover:text-stone-600 text-xs leading-none cursor-help"
+        onMouseEnter={(e) => {
+          const rect = e.currentTarget.getBoundingClientRect();
+          setPos({ x: rect.left + rect.width / 2, y: rect.top });
+        }}
+        onMouseLeave={() => setPos(null)}
+        tabIndex={-1}
+        type="button"
+      >
+        ⓘ
+      </button>
+      {pos && (
+        <div
+          className="fixed z-50 w-72 bg-stone-900 text-stone-100 text-xs rounded-lg p-3 shadow-xl pointer-events-none"
+          style={{ left: Math.min(pos.x, window.innerWidth - 300), top: pos.y - 10, transform: 'translateY(-100%)' }}
+        >
+          <div className="font-semibold mb-1 text-stone-50">{info.title}</div>
+          <div className="text-stone-300 mb-1.5 leading-relaxed">{info.def}</div>
+          <div className="text-stone-400 leading-relaxed border-t border-stone-700 pt-1.5 mt-1.5">
+            <span className="text-stone-500 uppercase tracking-wider text-[10px] block mb-0.5">Com interpretar-ho</span>
+            {info.interp}
+          </div>
+        </div>
+      )}
+    </span>
+  );
+}
+
 export default function ModelsPage() {
   const [selected, setSelected] = useState(null);
 
@@ -169,7 +247,12 @@ function ModelsOverview({ onSelect }) {
                 const best = dir === 'higher' ? Math.max(...values) : Math.min(...values);
                 return (
                   <tr key={key} className="border-t border-stone-100">
-                    <td className="px-4 py-2.5 text-stone-700"><Fmt>{label}</Fmt></td>
+                    <td className="px-4 py-2.5 text-stone-700">
+                      <span className="inline-flex items-center gap-0.5">
+                        <Fmt>{label}</Fmt>
+                        <MetricTooltip metricKey={key} />
+                      </span>
+                    </td>
                     {MODEL_ORDER.map((k, i) => {
                       const v = values[i];
                       const isBest = v === best;
@@ -409,6 +492,18 @@ function ModelsOverview({ onSelect }) {
             </p>
           </div>
         </div>
+        <p className="text-xs text-stone-500 mt-4">
+          Els models preentrenats estan disponibles a{' '}
+          <a
+            href="https://huggingface.co/jcomaas/tfg-66910/tree/main"
+            target="_blank"
+            rel="noreferrer"
+            className="underline hover:text-stone-900"
+          >
+            huggingface.co/jcomaas/tfg-66910
+          </a>
+          .
+        </p>
       </section>
     </div>
   );
@@ -504,17 +599,22 @@ function ModelDetail({ modelKey, onBack }) {
           <table className="w-full text-sm">
             <tbody>
               {[
-                ['F1-micro', metric.f1_micro, 3],
-                ['F1-macro', metric.f1_macro, 3],
-                ['F1-samples', metric.f1_samples, 3],
-                ['Precisió macro', metric.prec_macro, 3],
-                ['Recall macro', metric.rec_macro, 3],
-                ['ROC-AUC micro', metric.roc_auc, 3],
-                ['Hamming loss', metric.hamming, 3],
-                ['Subset accuracy', metric.subset_acc, 3],
-              ].map(([label, v, dec]) => (
+                ['F1-micro', metric.f1_micro, 3, 'f1_micro'],
+                ['F1-macro', metric.f1_macro, 3, 'f1_macro'],
+                ['F1-samples', metric.f1_samples, 3, 'f1_samples'],
+                ['Precisió macro', metric.prec_macro, 3, 'prec_macro'],
+                ['Recall macro', metric.rec_macro, 3, 'rec_macro'],
+                ['ROC-AUC micro', metric.roc_auc, 3, 'roc_auc'],
+                ['Hamming loss', metric.hamming, 3, 'hamming'],
+                ['Subset accuracy', metric.subset_acc, 3, 'subset_acc'],
+              ].map(([label, v, dec, mkey]) => (
                 <tr key={label} className="border-b border-stone-100 last:border-0">
-                  <td className="px-4 py-2.5 text-stone-600"><Fmt>{label}</Fmt></td>
+                  <td className="px-4 py-2.5 text-stone-600">
+                    <span className="inline-flex items-center gap-0.5">
+                      <Fmt>{label}</Fmt>
+                      <MetricTooltip metricKey={mkey} />
+                    </span>
+                  </td>
                   <td className="px-4 py-2.5 text-right font-mono tabular-nums text-stone-900">{v.toFixed(dec)}</td>
                 </tr>
               ))}

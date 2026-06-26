@@ -240,6 +240,10 @@ function ComparisonView({ entries }) {
   );
 }
 
+// canvia isLocal a false per previsualitzar el banner en local
+const isLocal = false;
+// const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
 export default function PredictPage() {
   const [text, setText] = useState('');
   const [model, setModel] = useState('mmbert');
@@ -328,10 +332,46 @@ export default function PredictPage() {
           Obre el <a className="underline hover:text-stone-900" href="https://bop.diba.cat/cercador-butlletins" target="_blank" rel="noreferrer">cercador del BOPB</a>, copia el text d'un anunci real i prova-hi els quatre
           models preentrenats. L&apos;historial de la sessió guarda les prediccions perquè puguis comparar-les.
         </p>
-        <div className="mt-3 bg-stone-100 border border-stone-200 rounded-lg px-4 py-2.5 text-xs text-stone-600 font-mono">
-          <span className="text-stone-400 mr-2">$</span>
-          cd /Users/jia/Documents/TFG &amp;&amp; tfg/bin/uvicorn api.main:app --port 8000
-        </div>
+
+        {!isLocal ? (
+          <div className="mt-6 bg-amber-50 border border-amber-300 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <span className="text-amber-500 text-lg leading-none mt-0.5">⚠</span>
+              <div>
+                <p className="text-sm font-semibold text-amber-900 mb-1">
+                  Predicció no disponible en aquesta versió desplegada
+                </p>
+                <p className="text-sm text-amber-800 leading-relaxed mb-3">
+                  Els models pesen fins a 1,7 GB i no es poden allotjar en una pàgina estàtica.
+                  Per provar la predicció en viu cal clonar el repositori i executar l&apos;API localment:
+                </p>
+                <div className="bg-amber-100 border border-amber-200 rounded px-3 py-2 text-xs font-mono text-amber-900 space-y-1">
+                  <div><span className="text-amber-500 mr-2">$</span>git clone https://github.com/jiacomas/TFG-jiacomas &amp;&amp; cd TFG-jiacomas</div>
+                  <div><span className="text-amber-500 mr-2">$</span>python -m venv tfg &amp;&amp; source tfg/bin/activate &amp;&amp; pip install -r requirements.txt</div>
+                  <div><span className="text-amber-500 mr-2">$</span>uvicorn api.main:app --port 8000</div>
+                </div>
+                <p className="text-xs text-amber-700 mt-2">
+                  Un cop l&apos;API estigui en marxa a <span className="font-mono">localhost:8000</span>, accedeix a <span className="font-mono">localhost:5173</span> per fer prediccions.
+                  Els models preentrenats es poden descarregar des de{' '}
+                  <a
+                    href="https://huggingface.co/jcomaas/tfg-66910/tree/main"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline hover:text-amber-900 font-medium"
+                  >
+                    HuggingFace ↗
+                  </a>
+                  .
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-3 bg-stone-100 border border-stone-200 rounded-lg px-4 py-2.5 text-xs text-stone-600 font-mono">
+            <span className="text-stone-400 mr-2">$</span>
+            uvicorn api.main:app --port 8000
+          </div>
+        )}
       </div>
 
       <div className="grid lg:grid-cols-12 gap-8">
@@ -407,7 +447,7 @@ export default function PredictPage() {
           {/* Predict button */}
           <button
             onClick={predict}
-            disabled={loading || !text.trim()}
+            disabled={loading || !text.trim() || !isLocal}
             className="mt-6 w-full bg-stone-900 text-white py-4 rounded-lg font-medium hover:bg-stone-800 disabled:bg-stone-300 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
           >
             {loading ? (
@@ -415,6 +455,8 @@ export default function PredictPage() {
                 <span className="animate-pulse">●</span>
                 <span>{MODEL_INFO[model].name} està predint…</span>
               </>
+            ) : !isLocal ? (
+              <span>Predicció no disponible — requereix API local</span>
             ) : (
               <span>Predir ODS amb {MODEL_INFO[model].name}</span>
             )}
