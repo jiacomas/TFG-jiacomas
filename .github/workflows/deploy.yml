@@ -33,7 +33,7 @@ jobs:
       - name: Build
         working-directory: frontend
         env:
-          VITE_BASE_PATH: /TFG/
+          VITE_BASE_PATH: /TFG-jiacomas/
           VITE_API_URL: https://jcomaas-tfg-66910.hf.space
         run: npm run build
 
