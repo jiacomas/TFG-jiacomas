@@ -1,6 +1,6 @@
 # Classificació Multilabel d'Anuncis Oficials del BOPB en ODS
 
-**Treball de Fi de Grau — Grau d'Enginyeria de Dades**
+**Treball de Fi de Grau - Grau d'Enginyeria de Dades**
 
 Escola d'Enginyeria, Universitat Autònoma de Barcelona (UAB)
 
@@ -81,7 +81,7 @@ conda activate tfg
 
 ### 3. Dependències de sistema
 
-**Només macOS** — XGBoost requereix `libomp` (OpenMP), que Apple Clang
+**Només macOS** - XGBoost requereix `libomp` (OpenMP), que Apple Clang
 no inclou per defecte. Instal·la-la via Homebrew **abans** de fer
 `pip install`:
 
@@ -89,7 +89,7 @@ no inclou per defecte. Instal·la-la via Homebrew **abans** de fer
 brew install libomp
 ```
 
-> **Linux i Windows** — cap acció necessària. El wheel de PyPI ja inclou
+> **Linux i Windows** - cap acció necessària. El wheel de PyPI ja inclou
 > les dependències OpenMP en aquests sistemes.
 
 > **Per què?** XGBoost utilitza paral·lelisme OpenMP per accelerar l'entrenament dels arbres. En macOS, Apple Clang no inclou `libomp` per defecte, de manera que el binari wheel de PyPI no pot trobar la llibreria en temps d'execució. Instal·lar-la via Homebrew resol l'error `Library not loaded: @rpath/libomp.dylib`.

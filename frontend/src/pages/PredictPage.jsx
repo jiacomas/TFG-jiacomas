@@ -2,8 +2,12 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { ODS, METRICS, COMPUTE, MODEL_INFO, MODEL_ORDER, fmtDuration } from '../constants';
 import { ODSBadge } from '../components';
 
+const API_URL = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/predict`
+  : 'http://localhost:8000/predict';
+
 async function callModelAPI(text, modelKey) {
-  const response = await fetch('/api/predict', {
+  const response = await fetch(API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ text: text.slice(0, 8000), model: modelKey }),
@@ -353,7 +357,7 @@ export default function PredictPage() {
                     className="block w-full text-left text-sm text-stone-700 hover:text-stone-900 py-1.5 px-2 hover:bg-white rounded transition"
                   >
                     <span className="font-medium text-stone-900">{ex.title}</span>
-                    <span className="text-stone-500"> — {ex.text.slice(0, 80)}…</span>
+                    <span className="text-stone-500"> - {ex.text.slice(0, 80)}…</span>
                   </button>
                 ))}
               </div>

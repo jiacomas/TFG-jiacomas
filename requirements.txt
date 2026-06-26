@@ -22,23 +22,23 @@ matplotlib
 seaborn
 wordcloud
 
-# NLP — text preprocessing
+# NLP - text preprocessing
 spacy>=3.7.0
 # After installing, run: python -m spacy download ca_core_news_lg
 stanza
 nltk
 
-# machine learning — classical models
+# machine learning - classical models
 scikit-learn
 iterative-stratification
 scikit-multilearn-ng
 xgboost
 
-# deep learning — CNN, LSTM
+# deep learning - CNN, LSTM
 torch
 pytorch-lightning
 
-# transformers — BERT fine-tuning
+# transformers - BERT fine-tuning
 transformers
 tokenizers
 datasets

@@ -275,7 +275,7 @@ export default function IntroPage({ edaData }) {
             <p>
               El problema s&apos;emmarca en l&apos;àmbit del <strong>Processament del Llenguatge Natural (NLP)</strong>:
               s&apos;ha d&apos;analitzar contingut textual en català i predir etiquetes en un escenari amb tres
-              dificultats afegides &mdash; multietiquetatge, fort desbalanceig de classes i complexitat semàntica del
+              dificultats afegides - multietiquetatge, fort desbalanceig de classes i complexitat semàntica del
               llenguatge administratiu.
             </p>
           </div>
@@ -372,12 +372,12 @@ export default function IntroPage({ edaData }) {
       {/* EDA: label distribution */}
       <section className="mb-20">
         <SectionTitle kicker="Anàlisi exploratòria" num="1.3">
-          Distribució per ODS &mdash; un fort desbalanceig
+          Distribució per ODS - un fort desbalanceig
         </SectionTitle>
         <p className="text-stone-700 leading-relaxed mb-6">
           La distribució d&apos;anuncis per ODS és molt desigual. ODS 11 (ciutats sostenibles) i ODS 8 (treball
           digne) concentren més de 9.000 anuncis cadascun, mentre que ODS 14 (vida submarina) en té
-          només 39 &mdash; un <em>ratio</em> de desbalanceig superior a 200×. Aquest fet té implicacions directes en
+          només 39 - un <em>ratio</em> de desbalanceig superior a 200×. Aquest fet té implicacions directes en
           l&apos;estratègia d&apos;entrenament.
         </p>
         <div className="bg-white border border-stone-200 rounded-lg p-6">
@@ -401,15 +401,15 @@ export default function IntroPage({ edaData }) {
         <div className="grid md:grid-cols-3 gap-6 mt-6">
           <div className="bg-emerald-50 border border-emerald-100 rounded p-4">
             <div className="text-xs uppercase tracking-wider text-emerald-700 mb-1">Majoritàris</div>
-            <div className="text-sm text-stone-700">ODS 11, 8, 3, 10, 9 &mdash; &gt; 2.800 anuncis cadascun.</div>
+            <div className="text-sm text-stone-700">ODS 11, 8, 3, 10, 9 -&gt; 2.800 anuncis cadascun.</div>
           </div>
           <div className="bg-amber-50 border border-amber-100 rounded p-4">
             <div className="text-xs uppercase tracking-wider text-amber-700 mb-1">Intermedis</div>
-            <div className="text-sm text-stone-700">ODS 16, 17, 4, 13, 1 &mdash; entre 1.500 i 2.500 anuncis.</div>
+            <div className="text-sm text-stone-700">ODS 16, 17, 4, 13, 1 -&gt; entre 1.500 i 2.500 anuncis.</div>
           </div>
           <div className="bg-rose-50 border border-rose-100 rounded p-4">
             <div className="text-xs uppercase tracking-wider text-rose-700 mb-1">Minoritaris</div>
-            <div className="text-sm text-stone-700">ODS 14, 12, 6, 2, 5 &mdash; menys de 700 anuncis (ODS 14 només 39).</div>
+            <div className="text-sm text-stone-700">ODS 14, 12, 6, 2, 5 -&gt; menys de 700 anuncis (ODS 14 només 39).</div>
           </div>
         </div>
       </section>
@@ -437,7 +437,7 @@ export default function IntroPage({ edaData }) {
           La densitat baixa (0,126) confirma que l&apos;espai d&apos;etiquetes és <em>esparcit</em>: cada anunci té
           només una petita fracció dels 17 ODS possibles. Combinada amb el fort desbalanceig, aquesta
           característica fa que els models <em>OvR</em> (<em>One-vs-Rest</em>) hagin d&apos;aprendre a no predir
-          gairebé res la major part del temps &mdash; una trampa per al <em>recall</em> si no es compensa.
+          gairebé res la major part del temps - una trampa per al <em>recall</em> si no es compensa.
         </p>
       </section>
 
@@ -483,7 +483,7 @@ export default function IntroPage({ edaData }) {
               </div>
             </dl>
             <p className="text-sm text-stone-600 mt-4 leading-relaxed">
-              La variabilitat de longitud és enorme. Els models <em>Transformer</em> truncats a 256 <em>tokens</em> perdran informació en els anuncis més llargs &mdash; una limitació coneguda del projecte.
+              La variabilitat de longitud és enorme. Els models <em>Transformer</em> truncats a 256 <em>tokens</em> perdran informació en els anuncis més llargs - una limitació coneguda del projecte.
             </p>
           </div>
           <div className="bg-white border border-stone-200 rounded-lg p-6">
@@ -516,9 +516,9 @@ export default function IntroPage({ edaData }) {
           Referències i recursos
         </SectionTitle>
         <ul className="text-sm text-stone-600 space-y-2">
-          <li>BOPB &mdash; <a className="underline hover:text-stone-900" href="https://bop.diba.cat/ca/ods" target="_blank" rel="noreferrer">Objectius de Desenvolupament Sostenible</a></li>
-          <li><a className="underline hover:text-stone-900" href="https://arxiv.org/abs/1810.04805" target="_blank" rel="noreferrer">Devlin et al. (2019), <em>BERT: Pre-training of Deep Bidirectional Transformers</em> &mdash; arXiv:1810.04805</a></li>
-          <li><a className="underline hover:text-stone-900" href="https://arxiv.org/abs/2401.16549" target="_blank" rel="noreferrer">Tarekegn, Ullah &amp; Cheikh (2024), <em>Deep Learning for Multi-Label Learning: A Survey</em> &mdash; arXiv:2401.16549</a></li>
+          <li>BOPB - <a className="underline hover:text-stone-900" href="https://bop.diba.cat/ca/ods" target="_blank" rel="noreferrer">Objectius de Desenvolupament Sostenible</a></li>
+          <li><a className="underline hover:text-stone-900" href="https://arxiv.org/abs/1810.04805" target="_blank" rel="noreferrer">Devlin et al. (2019), <em>BERT: Pre-training of Deep Bidirectional Transformers</em> - arXiv:1810.04805</a></li>
+          <li><a className="underline hover:text-stone-900" href="https://arxiv.org/abs/2401.16549" target="_blank" rel="noreferrer">Tarekegn, Ullah &amp; Cheikh (2024), <em>Deep Learning for Multi-Label Learning: A Survey</em> - arXiv:2401.16549</a></li>
           <li><a className="underline hover:text-stone-900" href="https://arxiv.org/abs/2309.01666" target="_blank" rel="noreferrer">Alfaro, Allende-Cid &amp; Allende (2023), <em>Multilabel Text Classification with Label-Dependent Representation</em></a></li>
           <li><a className="underline hover:text-stone-900" href="https://doi.org/10.1145/1217299.1217300" target="_blank" rel="noreferrer">Tsoumakas &amp; Katakis (2007), <em>Multi-Label Classification: An Overview</em></a></li>
           <li><a className="underline hover:text-stone-900" href="https://doi.org/10.1023/A:1010933404324" target="_blank" rel="noreferrer">Breiman (2001), <em>Random Forests</em></a></li>

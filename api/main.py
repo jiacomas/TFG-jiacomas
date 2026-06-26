@@ -98,7 +98,7 @@ def _force_single_thread(model) -> None:
     """Patch n_jobs=1 on model and all sub-estimators.
 
     RandomForestClassifier is saved with n_jobs=-1. On macOS, joblib's loky
-    backend forks worker processes — which segfaults after PyTorch is imported
+    backend forks worker processes - which segfaults after PyTorch is imported
     because fork() doesn't play well with PyTorch's internal CUDA/MPS state.
     Setting n_jobs=1 forces sequential execution and avoids the fork entirely.
     """
@@ -167,7 +167,7 @@ def _predict_ml(text: str, model_key: str) -> tuple[list[int], dict[int, float]]
     X = _cache["tfidf"].transform([preprocess_for_tfidf(text)])
     model = _cache[model_key]
 
-    # predict_proba returns list of (n_samples, n_classes) arrays — one per label
+    # predict_proba returns list of (n_samples, n_classes) arrays - one per label
     probas_list = model.predict_proba(X)
     confidences: dict[int, float] = {}
     for i, arr in enumerate(probas_list):

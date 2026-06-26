@@ -47,8 +47,8 @@ export const METRICS = {
 
 // Compute & resources (manually copied)
 export const COMPUTE = {
-  rf: { params: '—', size_mb: 1065, ram_train_mb: 472, ram_inf_mb: 195, train_s: 42, inf_total_s: 0.5, inf_per_sample_ms: 0.17 },
-  xgb: { params: '—', size_mb: 3, ram_train_mb: 1723, ram_inf_mb: 246, train_s: 218, inf_total_s: 0.5, inf_per_sample_ms: 0.17 },
+  rf: { params: '-', size_mb: 1065, ram_train_mb: 472, ram_inf_mb: 195, train_s: 42, inf_total_s: 0.5, inf_per_sample_ms: 0.17 },
+  xgb: { params: '-', size_mb: 3, ram_train_mb: 1723, ram_inf_mb: 246, train_s: 218, inf_total_s: 0.5, inf_per_sample_ms: 0.17 },
   berta: { params: '124M', size_mb: 476, ram_train_mb: 14138, ram_inf_mb: 11572, train_s: 22493, inf_total_s: 120, inf_per_sample_ms: 41.5 },
   mmbert: { params: '306M', size_mb: 1171, ram_train_mb: 18937, ram_inf_mb: 17115, train_s: 13057, inf_total_s: 159, inf_per_sample_ms: 55.0 },
 };
@@ -98,7 +98,7 @@ export const MODEL_INFO = {
     name: 'mmBERT',
     family: 'Transformer',
     color: '#264653',
-    short: 'ModernBERT multilingüe — el millor model del projecte.',
+    short: 'ModernBERT multilingüe - el millor model del projecte.',
     paper: 'JHU CLSP (2024), mmBERT',
     paperUrl: 'https://huggingface.co/jhu-clsp/ModernBERT-base',
     desc: 'mmBERT és la versió multilingüe de ModernBERT, una arquitectura Transformer modernitzada amb atenció Flash i rotary positional embeddings. Tot i ser 2,5× més gran que BERTa (306M vs 124M paràmetres), convergeix més ràpidament gràcies a aquestes optimitzacions. És el model amb millor rendiment global i el més robust en ODS minoritaris.',
