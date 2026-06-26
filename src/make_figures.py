@@ -2,10 +2,10 @@
 Generates the four figures of the TFG from JSON files in the format of
 ``wandb-summary.json`` (one per model). The data is read from the JSON, there is nothing hardcoded in the code.
 
-  1. f1_per_ods_comparison.png     — F1 bars for ODS, N models
-  2. threshold_tuning_diagram.png  — threshold tuning process
-  3. roc_auc_comparison.png        — ROC-AUC and Average Precision micro/macro
-  4. radar_f1_per_ods.png          — F1 radar diagram for ODS
+  1. f1_per_ods_comparison.png     - F1 bars for ODS, N models
+  2. threshold_tuning_diagram.png  - threshold tuning process
+  3. roc_auc_comparison.png        - ROC-AUC and Average Precision micro/macro
+  4. radar_f1_per_ods.png          - F1 radar diagram for ODS
 
 Use:
   python src/make_figures.py \\
@@ -93,7 +93,7 @@ def fig_f1_per_ods(models, out_dir):
     ax.set_ylabel("F1-score", fontsize=11)
     ax.set_ylim(0, 1.05)
     ax.set_title(
-        "F1-score per ODS — comparison of models (test)",
+        "F1-score per ODS - comparison of models (test)",
         fontsize=13,
         fontweight="bold",
         pad=12,
@@ -169,7 +169,7 @@ def fig_threshold_tuning(thr_model, out_dir):
     # (B) Optimal thresholds per class
     ax = axes[1]
     ax.set_title(
-        f"(B) Threshold Tuning — {thr_model['name']} (validation)",
+        f"(B) Threshold Tuning - {thr_model['name']} (validation)",
         fontsize=11,
         fontweight="bold",
         pad=8,
@@ -346,7 +346,7 @@ def _fig_threshold_per_ods_single(thr_model, out_dir, filename):
 
     fig, ax = plt.subplots(figsize=(8.5, 5.2))
     ax.set_title(
-        f"Optimal thresholds per ODS — {thr_model['name']} (validation)",
+        f"Optimal thresholds per ODS - {thr_model['name']} (validation)",
         fontsize=11,
         fontweight="bold",
         pad=8,
@@ -424,7 +424,7 @@ def _fig_threshold_per_ods_single(thr_model, out_dir, filename):
 
 
 def _fig_threshold_per_ods_multi(thr_models, out_dir, filename):
-    """Horizontal bars grouped by ODS — one group per model."""
+    """Horizontal bars grouped by ODS - one group per model."""
     n_models = len(thr_models)
 
     # Union of all present ODS, ordered by number
@@ -436,7 +436,7 @@ def _fig_threshold_per_ods_multi(thr_models, out_dir, filename):
     fig, ax = plt.subplots(figsize=(9, 6.5))
     names = " vs ".join(m["name"] for m in thr_models)
     ax.set_title(
-        f"Optimal thresholds per ODS — {names} (validation)",
+        f"Optimal thresholds per ODS - {names} (validation)",
         fontsize=11,
         fontweight="bold",
         pad=8,
@@ -710,7 +710,7 @@ def main(figures: list[int] = [1, 2, 3, 4, 5]):
         if thr_model_obj or paired:
             fig_threshold_tuning(
                 {
-                    "name": thr_model_obj["name"] if thr_model_obj else "—",
+                    "name": thr_model_obj["name"] if thr_model_obj else "-",
                     "thresholds": thr_model_obj["thresholds"] if thr_model_obj else {},
                     "paired": paired,
                 },
@@ -719,7 +719,7 @@ def main(figures: list[int] = [1, 2, 3, 4, 5]):
         else:
             print("  · threshold_tuning_diagram.png: no model with tuning, skipping.")
 
-    # Fig 5: thresholds per ODS — single model or BERTa vs mmBERT comparison
+    # Fig 5: thresholds per ODS - single model or BERTa vs mmBERT comparison
     if 5 in figures:
         thr_payload = [
             {"name": m["name"], "color": m["color"], "thresholds": m["thresholds"]}

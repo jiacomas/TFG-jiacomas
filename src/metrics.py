@@ -238,7 +238,7 @@ class HardwareMonitor:
             time.sleep(self._interval)
 
     def start(self) -> "HardwareMonitor":
-        self._proc.cpu_percent()  # prime — first call always returns 0.0
+        self._proc.cpu_percent()  # prime - first call always returns 0.0
         self._rss_t0 = self._proc.memory_info().rss / (1024**2)
         if self._has_cuda:
             self._torch.cuda.reset_peak_memory_stats()
