@@ -353,7 +353,7 @@ export default function PredictPage() {
                     className="block w-full text-left text-sm text-stone-700 hover:text-stone-900 py-1.5 px-2 hover:bg-white rounded transition"
                   >
                     <span className="font-medium text-stone-900">{ex.title}</span>
-                    <span className="text-stone-500"> — {ex.text.slice(0, 80)}…</span>
+                    <span className="text-stone-500"> - {ex.text.slice(0, 80)}…</span>
                   </button>
                 ))}
               </div>
