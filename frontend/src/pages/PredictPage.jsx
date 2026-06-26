@@ -240,7 +240,9 @@ function ComparisonView({ entries }) {
   );
 }
 
-const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+// canvia isLocal a false per previsualitzar el banner en local
+const isLocal = false;
+// const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
 export default function PredictPage() {
   const [text, setText] = useState('');
@@ -344,12 +346,22 @@ export default function PredictPage() {
                   Per provar la predicció en viu cal clonar el repositori i executar l&apos;API localment:
                 </p>
                 <div className="bg-amber-100 border border-amber-200 rounded px-3 py-2 text-xs font-mono text-amber-900 space-y-1">
-                  <div><span className="text-amber-500 mr-2">$</span>git clone https://github.com/jiacomas/TFG &amp;&amp; cd TFG</div>
+                  <div><span className="text-amber-500 mr-2">$</span>git clone https://github.com/jiacomas/TFG-jiacomas &amp;&amp; cd TFG-jiacomas</div>
                   <div><span className="text-amber-500 mr-2">$</span>python -m venv tfg &amp;&amp; source tfg/bin/activate &amp;&amp; pip install -r requirements.txt</div>
                   <div><span className="text-amber-500 mr-2">$</span>uvicorn api.main:app --port 8000</div>
                 </div>
                 <p className="text-xs text-amber-700 mt-2">
                   Un cop l&apos;API estigui en marxa a <span className="font-mono">localhost:8000</span>, accedeix a <span className="font-mono">localhost:5173</span> per fer prediccions.
+                  Els models preentrenats es poden descarregar des de{' '}
+                  <a
+                    href="https://huggingface.co/jcomaas/tfg-66910/tree/main"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline hover:text-amber-900 font-medium"
+                  >
+                    HuggingFace ↗
+                  </a>
+                  .
                 </p>
               </div>
             </div>
