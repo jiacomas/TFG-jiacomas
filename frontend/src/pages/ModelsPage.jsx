@@ -201,7 +201,7 @@ function ModelsOverview({ onSelect }) {
         </SectionTitle>
         <p className="text-stone-700 leading-relaxed mb-6">
           La diferència entre models es fa més evident en ODS minoritaris.
-          <em> Random Forest</em> pràcticament no detecta ODS 14, 6 i 5. Els <em>Transformers</em> &mdash; sobretot <em>mmBERT</em> &mdash;
+          <em> Random Forest</em> pràcticament no detecta ODS 14, 6 i 5. Els <em>Transformers</em> - sobretot <em>mmBERT</em> -
           aconsegueixen <em>recall</em> significatiu fins i tot en categories amb molt pocs exemples.
         </p>
         <div className="bg-white border border-stone-200 rounded-lg p-6 mb-6">
@@ -228,7 +228,7 @@ function ModelsOverview({ onSelect }) {
 
         {/* Radar */}
         <div className="bg-white border border-stone-200 rounded-lg p-6">
-          <h4 className="font-serif text-lg text-stone-900 mb-3">Radar &mdash; cobertura per ODS</h4>
+          <h4 className="font-serif text-lg text-stone-900 mb-3">Radar - cobertura per ODS</h4>
           <div style={{ width: '100%', height: 480 }}>
             <ResponsiveContainer>
               <RadarChart data={radarData} margin={{ top: 20, right: 30, bottom: 20, left: 30 }}>
@@ -250,7 +250,7 @@ function ModelsOverview({ onSelect }) {
       {/* Compute */}
       <section className="mb-16">
         <SectionTitle kicker="Cost computacional" num="2.3">
-          Rendiment vs. cost &mdash; el compromís clau
+          Rendiment vs. cost - el compromís clau
         </SectionTitle>
         <p className="text-stone-700 leading-relaxed mb-6">
           La diferència en cost entre models clàssics i <em>Transformer</em> és d&apos;ordres de magnitud.
@@ -499,7 +499,7 @@ function ModelDetail({ modelKey, onBack }) {
 
       {/* Detailed metrics */}
       <section className="mb-12">
-        <h2 className="text-xs uppercase tracking-[0.2em] text-stone-500 mb-3">Mètriques detallades &mdash; <em>test set</em></h2>
+        <h2 className="text-xs uppercase tracking-[0.2em] text-stone-500 mb-3">Mètriques detallades - <em>test set</em></h2>
         <div className="bg-white border border-stone-200 rounded-lg overflow-hidden">
           <table className="w-full text-sm">
             <tbody>

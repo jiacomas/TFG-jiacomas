@@ -1,4 +1,4 @@
-# BOPB × ODS — Frontend
+# BOPB × ODS - Frontend
 
 Tauler interactiu del TFG *Classificació multilabel d'anuncis oficials del BOPB segons els 17 ODS*.
 

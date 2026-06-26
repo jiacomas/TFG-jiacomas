@@ -2,7 +2,7 @@ import React from 'react';
 import { ODS } from './constants';
 
 /*
- * Fmt — typographic helper.
+ * Fmt - typographic helper.
  * Wraps foreign / English terms and model & library names in <em> (italic),
  * and code identifiers in <code> (monospace). Match is
  * case-sensitive and boundary-protected so it never breaks inside a word.
