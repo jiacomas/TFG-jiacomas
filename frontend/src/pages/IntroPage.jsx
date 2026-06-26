@@ -73,7 +73,7 @@ function CooccurrenceHeatmap({ matrix }) {
             <React.Fragment key={`r${i}`}>
               {/* Row header */}
               <div
-                className="text-[10px] tabular-nums flex items-center justify-end pr-1.5 rounded transition-all duration-150 font-medium"
+                className="text-[10px] tabular-nums flex items-center justify-end pr-1.5 rounded transition-all duration-150 font-medium whitespace-nowrap"
                 style={{
                   color: hovered.row === i ? "#264653" : "#78716c",
                   backgroundColor:
