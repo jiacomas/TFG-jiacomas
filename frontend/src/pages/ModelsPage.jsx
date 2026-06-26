@@ -492,6 +492,18 @@ function ModelsOverview({ onSelect }) {
             </p>
           </div>
         </div>
+        <p className="text-xs text-stone-500 mt-4">
+          Els models preentrenats estan disponibles a{' '}
+          <a
+            href="https://huggingface.co/jcomaas/tfg-66910/tree/main"
+            target="_blank"
+            rel="noreferrer"
+            className="underline hover:text-stone-900"
+          >
+            huggingface.co/jcomaas/tfg-66910
+          </a>
+          .
+        </p>
       </section>
     </div>
   );
