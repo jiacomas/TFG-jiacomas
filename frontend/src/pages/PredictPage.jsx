@@ -2,8 +2,12 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { ODS, METRICS, COMPUTE, MODEL_INFO, MODEL_ORDER, fmtDuration } from '../constants';
 import { ODSBadge } from '../components';
 
+const API_URL = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/predict`
+  : 'http://localhost:8000/predict';
+
 async function callModelAPI(text, modelKey) {
-  const response = await fetch('/api/predict', {
+  const response = await fetch(API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ text: text.slice(0, 8000), model: modelKey }),
