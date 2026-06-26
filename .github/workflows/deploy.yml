@@ -34,6 +34,7 @@ jobs:
         working-directory: frontend
         env:
           VITE_BASE_PATH: /TFG/
+          VITE_API_URL: https://jcomaas-tfg-66910.hf.space
         run: npm run build
 
       - uses: actions/upload-pages-artifact@v3

@@ -2,8 +2,12 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { ODS, METRICS, COMPUTE, MODEL_INFO, MODEL_ORDER, fmtDuration } from '../constants';
 import { ODSBadge } from '../components';
 
+const API_URL = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/predict`
+  : 'http://localhost:8000/predict';
+
 async function callModelAPI(text, modelKey) {
-  const response = await fetch('/api/predict', {
+  const response = await fetch(API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ text: text.slice(0, 8000), model: modelKey }),
@@ -299,7 +303,7 @@ export default function PredictPage() {
       console.error(e);
       const msg = e.message || '';
       if (msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('Load failed')) {
-        setError('No s\'ha pogut connectar amb el servidor de predicció. Assegura\'t que l\'API està en marxa: cd /Users/jia/Documents/TFG && tfg/bin/uvicorn api.main:app --port 8000');
+        setError("No s'ha pogut connectar amb el servidor de predicció. L'API pot estar arrencant (cold start ~30s), torna-ho a intentar.");
       } else {
         setError(`Error en la predicció: ${msg}`);
       }
@@ -324,10 +328,6 @@ export default function PredictPage() {
           Obre el <a className="underline hover:text-stone-900" href="https://bop.diba.cat/cercador-butlletins" target="_blank" rel="noreferrer">cercador del BOPB</a>, copia el text d'un anunci real i prova-hi els quatre
           models preentrenats. L&apos;historial de la sessió guarda les prediccions perquè puguis comparar-les.
         </p>
-        <div className="mt-3 bg-stone-100 border border-stone-200 rounded-lg px-4 py-2.5 text-xs text-stone-600 font-mono">
-          <span className="text-stone-400 mr-2">$</span>
-          cd /Users/jia/Documents/TFG &amp;&amp; tfg/bin/uvicorn api.main:app --port 8000
-        </div>
       </div>
 
       <div className="grid lg:grid-cols-12 gap-8">
