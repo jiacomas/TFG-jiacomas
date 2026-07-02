@@ -37,20 +37,20 @@ export const F1_PER_ODS = {
   mmbert: [0.7046, 0.6979, 0.8025, 0.7180, 0.6471, 0.7634, 0.8127, 0.9678, 0.8743, 0.7489, 0.9024, 0.5772, 0.7607, 0.4000, 0.7231, 0.7257, 0.6688],
 };
 
-// Aggregated metrics (manually copied)
+// Aggregated metrics — adjusted thresholds (tab:global) + default f1_macro (tab:thr)
 export const METRICS = {
-  rf: { f1_micro: 0.617, f1_macro: 0.315, f1_samples: 0.639, prec_macro: 0.770, rec_macro: 0.229, roc_auc: 0.937, hamming: 0.075, subset_acc: 0.445 },
-  xgb: { f1_micro: 0.808, f1_macro: 0.688, f1_samples: 0.825, prec_macro: 0.855, rec_macro: 0.590, roc_auc: 0.970, hamming: 0.045, subset_acc: 0.598 },
-  berta: { f1_micro: 0.790, f1_macro: 0.669, f1_samples: 0.840, prec_macro: 0.689, rec_macro: 0.666, roc_auc: 0.954, hamming: 0.054, subset_acc: 0.589 },
-  mmbert: { f1_micro: 0.833, f1_macro: 0.742, f1_samples: 0.874, prec_macro: 0.803, rec_macro: 0.707, roc_auc: 0.970, hamming: 0.042, subset_acc: 0.671 },
+  rf: { f1_micro: 0.684, f1_macro: 0.524, f1_weighted: 0.690, f1_samples: 0.707, ap_macro: 0.540, ap_micro: 0.775, roc_auc: 0.897, hamming: 0.085, subset_acc: 0.412, f1_macro_default: 0.323, prec_macro: 0.770, rec_macro: 0.229 },
+  xgb: { f1_micro: 0.814, f1_macro: 0.680, f1_weighted: 0.811, f1_samples: 0.833, ap_macro: 0.738, ap_micro: 0.891, roc_auc: 0.952, hamming: 0.047, subset_acc: 0.581, f1_macro_default: 0.652, prec_macro: 0.855, rec_macro: 0.590 },
+  berta: { f1_micro: 0.826, f1_macro: 0.718, f1_weighted: 0.826, f1_samples: 0.872, ap_macro: 0.724, ap_micro: 0.863, roc_auc: 0.944, hamming: 0.044, subset_acc: 0.656, f1_macro_default: 0.687, prec_macro: 0.689, rec_macro: 0.666 },
+  mmbert: { f1_micro: 0.843, f1_macro: 0.741, f1_weighted: 0.841, f1_samples: 0.884, ap_macro: 0.803, ap_micro: 0.913, roc_auc: 0.953, hamming: 0.039, subset_acc: 0.694, f1_macro_default: 0.751, prec_macro: 0.803, rec_macro: 0.707 },
 };
 
-// Compute & resources (manually copied)
+// Compute & resources — tab:cost
 export const COMPUTE = {
-  rf: { params: '-', size_mb: 1065, ram_train_mb: 472, ram_inf_mb: 195, train_s: 42, inf_total_s: 0.5, inf_per_sample_ms: 0.17 },
-  xgb: { params: '-', size_mb: 3, ram_train_mb: 1723, ram_inf_mb: 246, train_s: 218, inf_total_s: 0.5, inf_per_sample_ms: 0.17 },
-  berta: { params: '124M', size_mb: 476, ram_train_mb: 14138, ram_inf_mb: 11572, train_s: 22493, inf_total_s: 120, inf_per_sample_ms: 41.5 },
-  mmbert: { params: '306M', size_mb: 1171, ram_train_mb: 18937, ram_inf_mb: 17115, train_s: 13057, inf_total_s: 159, inf_per_sample_ms: 55.0 },
+  rf: { params: '-', size_mb: 1077, ram_train_mb: 503, ram_inf_mb: 195, train_s: 31, inf_total_s: 0.5, inf_per_sample_ms: 0.17 },
+  xgb: { params: '-', size_mb: 3, ram_train_mb: 1377, ram_inf_mb: 246, train_s: 250, inf_total_s: 0.5, inf_per_sample_ms: 0.17 },
+  berta: { params: '124M', size_mb: 476, ram_train_mb: 15081, ram_inf_mb: 11572, train_s: 46628, inf_total_s: 120, inf_per_sample_ms: 41.5 },
+  mmbert: { params: '306M', size_mb: 1171, ram_train_mb: 19199, ram_inf_mb: 17115, train_s: 30246, inf_total_s: 159, inf_per_sample_ms: 55.0 },
 };
 
 export const MODEL_INFO = {

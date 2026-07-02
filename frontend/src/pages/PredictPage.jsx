@@ -240,9 +240,8 @@ function ComparisonView({ entries }) {
   );
 }
 
-// canvia isLocal a false per previsualitzar el banner en local
-const isLocal = false;
-// const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+// const isLocal = false;
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
 export default function PredictPage() {
   const [text, setText] = useState('');

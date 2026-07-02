@@ -50,6 +50,41 @@ const METRIC_INFO = {
   },
 };
 
+const MODEL_DISPLAY_KEYS = ['Random Forest', 'XGBoost', 'BERTa', 'mmBERT'];
+
+function ChartTooltip({ active, payload, label, labelFn }) {
+  if (!active || !payload?.length) return null;
+  const ordered = MODEL_DISPLAY_KEYS
+    .map(k => payload.find(p => (p.dataKey ?? p.name) === k))
+    .filter(Boolean);
+  return (
+    <div style={{ background: '#fff', border: '1px solid #e7e5e4', fontSize: 12, borderRadius: 6, padding: '8px 12px' }}>
+      <div style={{ fontWeight: 500, marginBottom: 4 }}>{labelFn ? labelFn(label) : label}</div>
+      {ordered.map(p => (
+        <div key={p.dataKey ?? p.name} style={{ color: p.fill ?? p.color, marginBottom: 1 }}>
+          {p.dataKey ?? p.name} : {typeof p.value === 'number' ? p.value.toFixed(3) : p.value}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ChartLegend({ payload }) {
+  const ordered = MODEL_DISPLAY_KEYS
+    .map(k => payload?.find(p => p.value === k))
+    .filter(Boolean);
+  return (
+    <ul style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '6px 16px', padding: '8px 0 0', margin: 0, fontSize: 12, listStyle: 'none' }}>
+      {ordered.map(p => (
+        <li key={p.value} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span style={{ width: 10, height: 10, background: p.color, display: 'inline-block', borderRadius: 2 }} />
+          {p.value}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function MetricTooltip({ metricKey }) {
   const [pos, setPos] = useState(null);
   const info = METRIC_INFO[metricKey];
@@ -205,11 +240,8 @@ function ModelsOverview({ onSelect }) {
                 <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
                 <XAxis dataKey="metric" tick={{ fontSize: 12 }} stroke="#78716c" />
                 <YAxis domain={[0, 1]} tick={{ fontSize: 11 }} stroke="#78716c" />
-                <Tooltip
-                  contentStyle={{ background: '#fff', border: '1px solid #e7e5e4', fontSize: 12, borderRadius: 6 }}
-                  formatter={(v) => v.toFixed(3)}
-                />
-                <Legend wrapperStyle={{ fontSize: 12, paddingTop: 10 }} />
+                <Tooltip content={ChartTooltip} />
+                <Legend content={ChartLegend} wrapperStyle={{ paddingTop: 10 }} />
                 <Bar dataKey="Random Forest" fill={MODEL_INFO.rf.color} radius={[3, 3, 0, 0]} />
                 <Bar dataKey="XGBoost" fill={MODEL_INFO.xgb.color} radius={[3, 3, 0, 0]} />
                 <Bar dataKey="BERTa" fill={MODEL_INFO.berta.color} radius={[3, 3, 0, 0]} />
@@ -234,12 +266,12 @@ function ModelsOverview({ onSelect }) {
             </thead>
             <tbody>
               {[
-                ['F1-micro', 'f1_micro', 3, 'higher'],
                 ['F1-macro', 'f1_macro', 3, 'higher'],
+                ['F1-micro', 'f1_micro', 3, 'higher'],
                 ['F1-samples', 'f1_samples', 3, 'higher'],
                 ['Precisió macro', 'prec_macro', 3, 'higher'],
                 ['Recall macro', 'rec_macro', 3, 'higher'],
-                ['ROC-AUC micro', 'roc_auc', 3, 'higher'],
+                ['ROC-AUC macro', 'roc_auc', 3, 'higher'],
                 ['Hamming loss', 'hamming', 3, 'lower'],
                 ['Subset accuracy', 'subset_acc', 3, 'higher'],
               ].map(([label, key, dec, dir]) => {
@@ -294,12 +326,8 @@ function ModelsOverview({ onSelect }) {
                 <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
                 <XAxis dataKey="ods" tick={{ fontSize: 11 }} stroke="#78716c" />
                 <YAxis domain={[0, 1]} tick={{ fontSize: 11 }} stroke="#78716c" />
-                <Tooltip
-                  contentStyle={{ background: '#fff', border: '1px solid #e7e5e4', fontSize: 12, borderRadius: 6 }}
-                  formatter={(v) => v.toFixed(3)}
-                  labelFormatter={(l) => `ODS ${l}`}
-                />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
+                <Tooltip content={(props) => <ChartTooltip {...props} labelFn={(l) => `ODS ${l}`} />} />
+                <Legend content={ChartLegend} />
                 <Bar dataKey="Random Forest" fill={MODEL_INFO.rf.color} />
                 <Bar dataKey="XGBoost" fill={MODEL_INFO.xgb.color} />
                 <Bar dataKey="BERTa" fill={MODEL_INFO.berta.color} />
@@ -322,8 +350,8 @@ function ModelsOverview({ onSelect }) {
                 <Radar name="XGBoost" dataKey="XGBoost" stroke={MODEL_INFO.xgb.color} fill={MODEL_INFO.xgb.color} fillOpacity={0.10} strokeWidth={2} />
                 <Radar name="BERTa" dataKey="BERTa" stroke={MODEL_INFO.berta.color} fill={MODEL_INFO.berta.color} fillOpacity={0.10} strokeWidth={2} />
                 <Radar name="mmBERT" dataKey="mmBERT" stroke={MODEL_INFO.mmbert.color} fill={MODEL_INFO.mmbert.color} fillOpacity={0.10} strokeWidth={2} />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Tooltip contentStyle={{ background: '#fff', border: '1px solid #e7e5e4', fontSize: 12, borderRadius: 6 }} formatter={(v) => v.toFixed(3)} />
+                <Legend content={ChartLegend} />
+                <Tooltip content={ChartTooltip} />
               </RadarChart>
             </ResponsiveContainer>
           </div>
